@@ -1,0 +1,75 @@
+<app-header title="Detalles" backButton="/main/home"></app-header>
+
+<ion-content class="ion-padding">
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="loader-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando detalles...</p>
+  </div>
+
+  <div *ngIf="!isLoading && publication">
+    <!-- Galería de imágenes -->
+    <swiper-container [pagination]="true">
+      <swiper-slide *ngFor="let image of publication.images">
+        <img [src]="image" style="width: 100%; height: 250px; object-fit: cover;">
+      </swiper-slide>
+    </swiper-container>
+
+    <!-- Información de la cabaña -->
+    <ion-card mode="ios">
+      <ion-card-header>
+        <ion-card-title>{{ publication.title }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-text color="primary">${{ publication.price }} CLP</ion-text>
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>{{ publication.description }}</p>
+        
+        <ion-item lines="none">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          <ion-label>Capacidad: {{ publication.capacity }} personas</ion-label>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="location-outline" slot="start"></ion-icon>
+          <ion-label>Ubicación: {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}</ion-label>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-icon name="car-outline" slot="start"></ion-icon>
+        <ion-label>Estacionamiento: {{ publication.parking ? 'Sí' : 'No' }}</ion-label>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-label>Publicado: {{ publication.createdAt.toDate() | date:'dd/MM/yyyy' }}</ion-label>
+  </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información del arrendador -->
+    <ion-card mode="ios">
+      <ion-card-header>
+        <ion-card-title>Información del Arrendador</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>
+            
+            <h2>{{ publication.userName }} {{ publication.userLastName }}</h2>
+            <p><ion-icon name="mail-outline"></ion-icon> {{ publication.userEmail }}</p>
+            
+            <p>
+                <ion-icon name="call-outline"></ion-icon>
+                <strong> +(56) </strong>{{ publication.userPhone }}
+            </p>
+        </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

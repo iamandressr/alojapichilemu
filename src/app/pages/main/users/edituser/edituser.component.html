@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Editar Usuario</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="stacked">Nombre</ion-label>
+    <ion-input [(ngModel)]="user.name"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Apellido</ion-label>
+    <ion-input [(ngModel)]="user.apellido"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Rol</ion-label>
+    <ion-select [(ngModel)]="user.rol">
+      <ion-select-option value="admin">Administrador</ion-select-option>
+      <ion-select-option value="cliente">Cliente</ion-select-option>
+      <ion-select-option value="cliente">Arrendador</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button expand="block" (click)="saveChanges()" class="ion-margin-top">
+    Guardar Cambios
+  </ion-button>
+</ion-content>

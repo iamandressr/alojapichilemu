@@ -1,0 +1,62 @@
+<app-header title="Login"></app-header>
+<ion-content>
+
+
+  <!-- Formulario inicio de sesion --> 
+  <div class="d-flex-center">
+
+    <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+      <app-logo></app-logo>
+
+      <!-- Input correo -->
+      <app-custom-input 
+       autocomplete="email" 
+       icon="mail-outline" 
+       [control]="form.controls.email" 
+       type="email"
+       label="Correo"
+       ></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.email.errors && form.controls.email.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.email.errors?.['required']">El correo es requerido</div>
+        <!-- Error correo no valido -->
+        <div *ngIf="form.controls.email.errors?.['email']">Ingrese un correo valido</div>
+      </div>
+
+      <!-- Input contraseña -->
+      <app-custom-input
+       [control]="form.controls.password"
+       icon="lock-closed-outline" 
+       type="password"
+       label="Contraseña"
+       ></app-custom-input>
+
+       <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
+      </div>
+
+      <!-- Boton olvide mi contraseña -->
+       <p routerLink="forgot-password">¿Olvidaste tu contraseña?</p>
+       <!-- <p routerLink="forgot-password" class="ion-text-end">¿Olvidaste tu contraseña?</p> -->
+
+      <!-- Boton de inicio de sesion -->
+      <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+        Ingresar
+        <ion-icon slot="end" name="log-in-outline"></ion-icon>
+      </ion-button>
+
+      <!-- Boton de registro -->
+      <ion-button class="ion-margin-top" routerLink="sign-up" expand="block" mode="ios" fill="outline">
+        Registrate
+        <ion-icon slot="end" name="person-add-outline"></ion-icon>
+      </ion-button>
+    </form>
+
+  </div>
+
+
+
+</ion-content>

@@ -1,0 +1,86 @@
+<app-header backButton="/auth" title="Registro"></app-header>
+<ion-content>
+
+
+  <!-- Formulario inicio de sesion -->
+  <div class="d-flex-center">
+
+    <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+      <app-logo></app-logo>
+
+      <!-- Input name -->
+      <app-custom-input autocomplete="name" icon="person-outline" [control]="form.controls.name" type="text"
+        label="Nombre"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.name.errors && form.controls.name.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.name.errors?.['required']">El nombre es requerido</div>
+        <!-- Error correo no valido -->
+        <div *ngIf="form.controls.name.errors?.['minlenght']">El nombre debe tener al menos 4 caracteres</div>
+      </div>
+
+      <!-- Input apellido -->
+      <app-custom-input autocomplete="family-name" icon="person-outline" [control]="form.controls.apellido" type="text"
+        label="Apellido"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.apellido.errors && form.controls.apellido.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.apellido.errors?.['required']">El nombre es requerido</div>
+        <!-- Error correo no valido -->
+        <div *ngIf="form.controls.apellido.errors?.['minlenght']">El nombre debe tener al menos 4 caracteres</div>
+      </div>
+
+      <!-- Input RUN -->
+      <app-custom-input autocomplete="off" icon="card-outline" [control]="form.controls.run" type="text"
+        label="RUN (sin puntos y sin guión)"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.run.errors && form.controls.run.touched">
+        <div *ngIf="form.controls.run.errors?.['required']">El RUN es requerido</div>
+        <div *ngIf="form.controls.run.errors?.['minlength'] || form.controls.run.errors?.['maxlength']">Ingrese un RUN
+          válido</div>
+      </div>
+
+      <!-- Input número -->
+      <app-custom-input autocomplete="tel" icon="call-outline" [control]="form.controls.telefono" type="tel"
+        label="Número telefónico"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.telefono.errors && form.controls.telefono.touched">
+        <div *ngIf="form.controls.telefono.errors?.['required']">El número telefónico es requerido</div>
+        <div *ngIf="form.controls.telefono.errors?.['minlength'] || form.controls.telefono.errors?.['maxlength']">El
+          número
+          debe tener 9 dígitos</div>
+      </div>
+
+      <!-- Input correo -->
+      <app-custom-input autocomplete="email" icon="mail-outline" [control]="form.controls.email" type="email"
+        label="Correo"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.email.errors && form.controls.email.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.email.errors?.['required']">El correo es requerido</div>
+        <!-- Error correo no valido -->
+        <div *ngIf="form.controls.email.errors?.['email']">Ingrese un correo valido</div>
+      </div>
+
+      <!-- Input contraseña -->
+      <app-custom-input [control]="form.controls.password" icon="lock-closed-outline" type="password"
+        label="Contraseña"></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.touched">
+        <!-- Error correo no escrito -->
+        <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
+      </div>
+
+      <!-- Boton de registro -->
+      <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+        Registrate
+        <ion-icon slot="end" name="person-add-outline"></ion-icon>
+      </ion-button>
+    </form>
+
+  </div>
+
+
+
+</ion-content>

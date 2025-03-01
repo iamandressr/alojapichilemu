@@ -1,0 +1,44 @@
+<app-header title="Publicaciones"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+    <ion-button expand="block" mode="ios" class="ion-margin-top" color="primary" (click)="goToCreatePublication()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Crear Publicación
+    </ion-button>
+
+    <h1>Mis Publicaciones</h1>
+
+    <div *ngIf="isLoading" class="loader-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando publicaciones...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+      <ion-list>
+        <ion-item *ngFor="let publication of userPublications">
+          <ion-thumbnail slot="start">
+            <img [src]="publication.images[0]" alt="Imagen principal">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{publication.title}}</h2>
+            <p>{{publication.description}}</p>
+            <p>Precio: ${{publication.price}} CLP</p>
+          </ion-label>
+          <ion-buttons slot="end">
+            <ion-button color="primary" (click)="editPublication(publication)">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button color="danger" (click)="confirmDelete(publication)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-list>
+
+      <ion-text color="medium" *ngIf="userPublications.length === 0" class="ion-text-center">
+        <p>No tienes publicaciones aún</p>
+      </ion-text>
+    </div>
+  </div>
+</ion-content>

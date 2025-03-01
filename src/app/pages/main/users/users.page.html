@@ -1,0 +1,77 @@
+<app-header title="Usuarios"></app-header>
+
+<ion-content>
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="loader-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando usuarios...</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!isLoading">
+    <ion-searchbar
+      placeholder="Buscar por RUN"
+      mode="ios"
+      (ionInput)="searchByRun($event)"
+      class="ion-margin-top">
+    </ion-searchbar>
+
+    <br>
+
+    <ion-segment (ionChange)="segmentChanged($event)" value="todos" mode="ios">
+      <ion-segment-button value="todos">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="admin">
+        <ion-label>Admin</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="arrendador">
+        <ion-label>Arrendador</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cliente">
+        <ion-label>Cliente</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-segment (ionChange)="statusChanged($event)" value="todos" mode="ios" class="ion-margin-top">
+      <ion-segment-button value="todos">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="enabled">
+        <ion-label>Habilitados</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="disabled">
+        <ion-label>Deshabilitados</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-list>
+      <ion-item *ngFor="let user of filteredUsers">
+        <ion-avatar slot="start">
+          <ion-icon name="person-circle-outline" size="large"></ion-icon>
+        </ion-avatar>
+        
+        <ion-label>
+          <h2>{{user.name}} {{user.apellido}}</h2>
+          <p>{{user.run}}</p>
+          <p>{{user.email}}</p>
+          <p>Rol: {{user.rol}}</p>
+          <p>Estado:
+            <ion-text [color]="user.enabled ? 'success' : 'danger'">
+              {{user.enabled ? 'Habilitado' : 'Deshabilitado'}}
+            </ion-text>
+          </p>
+        </ion-label>
+
+        <ion-buttons slot="end">
+          <ion-button color="primary" (click)="editUser(user)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button [color]="user.enabled ? 'danger' : 'success'" (click)="confirmToggleUser(user)">
+            <ion-icon [name]="user.enabled ? 'close-circle-outline' : 'checkmark-circle-outline'"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,47 @@
+<app-header title="Inicio"></app-header>
+
+<ion-content [scrollEvents]="true" class="ion-padding-bottom">
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="loader-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando publicaciones...</p>
+  </div>
+
+  <!-- Lista de Publicaciones -->
+  <ion-list *ngIf="!isLoading && publications && publications.length > 0">
+    <ion-item *ngFor="let publication of publications" class="publication-item">
+      <ion-thumbnail slot="start">
+        <img [src]="publication.images[0]" alt="publication image">
+      </ion-thumbnail>
+      
+      <ion-label>
+        <h2>{{ publication.title }}</h2>
+        <h3 class="price-text">${{ publication.price }} CLP</h3>
+        <p>
+          <ion-icon name="person-outline"></ion-icon>
+          {{ publication.userName }} {{ publication.userLastName }}
+        </p>
+        <p>
+          <ion-icon name="people-outline"></ion-icon>
+          {{ publication.capacity }} personas
+        </p>
+        <p>
+          <ion-icon name="earth-outline"></ion-icon>
+          {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}
+        </p>
+        <ion-button size="small" (click)="goToPublicationDetail(publication)">
+          Ver más detalles
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        </ion-button>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && (!publications || publications.length === 0)" class="empty-state">
+    <ion-icon name="newspaper-outline" style="font-size: 100px; color: var(--ion-color-medium)"></ion-icon>
+    <ion-text color="medium">
+      <h2>No hay publicaciones para mostrar</h2>
+    </ion-text>
+  </div>
+</ion-content>

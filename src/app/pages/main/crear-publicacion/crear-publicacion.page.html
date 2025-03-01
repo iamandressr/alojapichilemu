@@ -1,0 +1,106 @@
+<app-header backButton="/main/publicaciones" title="Nueva Publicación"></app-header>
+
+<ion-content>
+  <form [formGroup]="publicationForm">
+    <ion-item >
+      <p>Recomendación: Selecciona la imagen más importante de las primeras.</p>
+      <ion-label position="floating">Imágenes</ion-label>
+      <br>
+      <input type="file" accept="image/*" multiple (change)="handleImageUpload($event)" class="ion-margin-top">
+      <br>
+    </ion-item>
+
+    <!-- Previsualización de imágenes -->
+    <ion-grid *ngIf="selectedImages.length > 0">
+      <ion-row>
+        <ion-col size="4" *ngFor="let image of selectedImages; let i = index">
+          <ion-card>
+            <img [src]="image.preview">
+            <ion-button fill="clear" color="danger" (click)="removeImage(i)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-item>
+      <ion-label position="floating">Título</ion-label>
+      <ion-input formControlName="title"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Descripción</ion-label>
+      <ion-textarea formControlName="description"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Precio por noche (CLP)</ion-label>
+      <br>
+      <ion-input
+     
+        type="number" 
+        formControlName="price" 
+        min="0"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="Ej: 45000">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Ubicación</ion-label>
+      <br>
+      <ion-select interface="action-sheet" placeholder="Seleccione ubicación" formControlName="location">
+        <ion-select-option value="pichilemu">Pichilemu</ion-select-option>
+        <ion-select-option value="cahuil">Cahuil</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Estacionamiento</ion-label>
+      <br>
+      <ion-select interface="action-sheet" placeholder="¿Contiene estacionamiento?" formControlName="estacionamiento">
+        <ion-select-option value="si">Si</ion-select-option>
+        <ion-select-option value="no">No</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label  position="floating">Capacidad (personas)</ion-label>
+      <ion-input
+         
+        type="number" 
+        formControlName="capacity" 
+        min="1" 
+        max="20"
+        [clearInput]="true"
+        inputmode="numeric"
+        pattern="[0-9]*">
+      </ion-input>
+    </ion-item>
+
+    <br>
+    <ion-button 
+  expand="block" 
+  mode="ios"
+  class="ion-padding-horizontal ion-margin-top"
+  (click)="createPublication()"
+  [disabled]="!publicationForm.valid || selectedImages.length === 0"
+  strong="true">
+  <ion-icon slot="start" name="add"></ion-icon>
+  Publicar
+</ion-button>
+<ion-button
+  expand="block" 
+  mode="ios"
+  (click)="goBack()"
+  fill="outline">
+  <ion-icon slot="start" name="close-outline"></ion-icon>
+  Cancelar
+</ion-button>
+
+<br>
+<br>
+  </form>
+</ion-content>

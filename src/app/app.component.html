@@ -1,0 +1,49 @@
+<ion-app>
+  <ion-menu contentId="main-content" *ngIf="!isAuthPage()">
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="primary">
+        <ion-title>
+          <strong>Menú</strong>
+          <div class="admin">{{userData?.name || 'Usuario'}} {{userData?.apellido}}</div>
+        </ion-title>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content>
+      <ion-list>
+        <ion-item (click)="navigateAndCloseMenu('/main/home')">
+          <ion-icon name="home-outline" slot="start"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+        
+        <ion-item (click)="navigateAndCloseMenu('/main/profile')">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Perfil</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="userData?.rol === 'admin' || userData?.rol === 'arrendador'" (click)="navigateAndCloseMenu('/main/publicaciones')">
+          <ion-icon slot="start" name="today-outline"></ion-icon>
+          <ion-label>Publicaciones</ion-label>
+        </ion-item>
+        
+        <ion-item (click)="navigateAndCloseMenu('/main/settings')">
+          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          <ion-label>Configuración</ion-label>
+        </ion-item>
+        
+        <ion-item *ngIf="userData?.rol === 'admin'" (click)="navigateAndCloseMenu('/main/users')">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          <ion-label>Usuarios</ion-label>
+        </ion-item>
+        
+        <ion-item (click)="confirmLogout()" class="logout-item">
+          <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+          <ion-label color="danger">Cerrar Sesión</ion-label>
+        </ion-item>
+        
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+</ion-app>
