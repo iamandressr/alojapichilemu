@@ -1,0 +1,32 @@
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 14px;
+  margin-left: 16px;
+  margin-top: 5px;
+  margin-bottom: 16px;
+}
+
+ion-item {
+  margin-bottom: 10px;
+  --border-radius: 8px;
+  --background: var(--ion-color-light);
+  margin-top: 10px;
+}
+
+ion-button {
+  margin-top: 20px;
+  --border-radius: 8px;
+}
+
+ion-icon[slot="start"] {
+  margin-right: 10px;
+  color: var(--ion-color-primary);
+}
+
+ion-label {
+  font-weight: 500;
+}
+
+form {
+  padding: 10px;
+}

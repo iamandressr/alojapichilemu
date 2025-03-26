@@ -23,6 +23,9 @@
               <h2>Nombre</h2>
               <p>{{ user.name }} {{ user.apellido }}</p>
             </ion-label>
+            <ion-button fill="clear" (click)="openEditNameModal()">
+              <ion-icon name="create-outline" color="primary"></ion-icon>
+            </ion-button>
           </ion-item>
 
           <ion-item>
