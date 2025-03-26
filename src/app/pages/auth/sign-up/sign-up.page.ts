@@ -56,30 +56,30 @@ export class SignUpPage implements OnInit {
     }
 }
 
-  async setUserInfo(uid: string) {
-    if (this.form.valid) {
-      const loading = await this.utilsSvc.loading();
-      await loading.present();
+async setUserInfo(uid: string) {
+  if (this.form.valid) {
+    const loading = await this.utilsSvc.loading();
+    await loading.present();
 
-      const user = this.form.value as User;
-      const displayName = `${user.name} ${user.apellido}`;
+    const user = this.form.value as User;
+    const displayName = `${user.name} ${user.apellido}`;
 
-      let path = `users/${uid}`;
-      delete this.form.value.password;
+    // Asegurarse de que el usuario esté habilitado
+    user.enabled = true; // Añadir esta línea
+    
+    let path = `users/${uid}`;
+    delete user.password;
 
-      this.firebaseSvc.setDocument(path, this.form.value).then(async res => {
-
-        this.utilsSvc.saveInLocalStorage('user', this.form.value);
-        this.utilsSvc.routerLink('/main/home');
-        this.form.reset();
-
-      }).catch(error => {
-        console.log(error);
-        this.utilsSvc.presentToast(error);
-
-      }).finally(() => {
-        loading.dismiss();
-      })
-    }
+    this.firebaseSvc.setDocument(path, user).then(async res => {
+      this.utilsSvc.saveInLocalStorage('user', user);
+      this.utilsSvc.routerLink('/main/home');
+      this.form.reset();
+    }).catch(error => {
+      console.log(error);
+      this.utilsSvc.presentToast(error);
+    }).finally(() => {
+      loading.dismiss();
+    })
   }
+}
 }

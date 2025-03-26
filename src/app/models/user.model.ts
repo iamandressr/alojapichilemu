@@ -7,4 +7,5 @@ export interface User{
     telefono: string;
     run: string;
     rol: string;
+    enabled: boolean;
 }
