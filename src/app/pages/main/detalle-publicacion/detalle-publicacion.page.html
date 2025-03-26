@@ -81,17 +81,22 @@
           </ion-item>
         </div>
 
-        <!-- Estado del usuario (solo visible para administradores) -->
-        <div *ngIf="isAdmin" class="user-status">
-          <div class="status-indicator">
-            <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'"
-              [color]="userActive ? 'success' : 'danger'">
-            </ion-icon>
-            <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
-              {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
-            </span>
-          </div>
-        </div>
+        <!-- Estado del usuario y botón de borrar (solo visible para administradores) -->
+    <div *ngIf="isAdmin" class="admin-controls">
+      <div class="status-indicator">
+        <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'" 
+                 [color]="userActive ? 'success' : 'danger'">
+        </ion-icon>
+        <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
+          {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
+        </span>
+      </div>
+      
+      <ion-button color="danger" size="small" (click)="deletePublication()" class="delete-button">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Eliminar publicación
+      </ion-button>
+    </div>
       </ion-card-content>
     </ion-card>
   </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { register } from 'swiper/element';
 
@@ -17,6 +18,7 @@ export class DetallePublicacionPage implements OnInit {
   isLoading: boolean = true;
   isAdmin: boolean = false;
   userActive: boolean = false;
+  currentUser: any = null;
 
   slideOpts = {
     initialSlide: 0,
@@ -27,7 +29,11 @@ export class DetallePublicacionPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private firebaseSvc: FirebaseService
+    private router: Router,
+    private firebaseSvc: FirebaseService,
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) { }
 
   async ngOnInit() {
@@ -93,6 +99,64 @@ export class DetallePublicacionPage implements OnInit {
     } catch (error) {
       console.error('Error al verificar existencia del autor:', error);
       this.userActive = false;
+    }
+  }
+
+  async deletePublication() {
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            await this.confirmDeletePublication();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async confirmDeletePublication() {
+    try {
+      const loading = await this.loadingCtrl.create({
+        message: 'Eliminando publicación...'
+      });
+      await loading.present();
+
+      // Eliminar la publicación
+      const path = `publications/${this.publication.id}`;
+      await this.firebaseSvc.deleteDocument(path);
+
+      await loading.dismiss();
+
+      // Mostrar mensaje de éxito
+      const toast = await this.toastCtrl.create({
+        message: 'Publicación eliminada correctamente',
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+
+      // Navegar de vuelta a la página anterior
+      this.router.navigate(['/main/home']);
+    } catch (error) {
+      console.error('Error al eliminar la publicación:', error);
+      
+      // Mostrar mensaje de error
+      const toast = await this.toastCtrl.create({
+        message: 'Error al eliminar la publicación',
+        duration: 2000,
+        color: 'danger'
+      });
+      await toast.present();
     }
   }
 }
