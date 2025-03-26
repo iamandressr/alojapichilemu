@@ -46,13 +46,28 @@
 
           <ion-item lines="none" class="feature-item">
             <ion-icon name="car-outline" color="primary" slot="start"></ion-icon>
-            <ion-label>{{ publication.parking ? 'Sí' : 'No' }}</ion-label>
+            <ion-label>{{ publication.estacionamiento === 'si' ? 'Sí' : 'No' }}</ion-label>
           </ion-item>
 
           <ion-item lines="none" class="feature-item">
             <ion-icon name="calendar-outline" color="primary" slot="start"></ion-icon>
             <ion-label>{{ publication.createdAt.toDate() | date:'dd/MM/yyyy' }}</ion-label>
           </ion-item>
+        </div>
+
+        <!-- Botón de reserva (solo para usuarios normales) -->
+        <div>
+          <ion-card-header>
+            <ion-card-title>Reservar Alojamiento</ion-card-title>
+          </ion-card-header>
+          <ion-button expand="block" color="primary" (click)="showReservationModal()"
+            [disabled]="!publication.availability">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            Reservar
+          </ion-button>
+          <ion-text color="medium" *ngIf="!publication.availability">
+            <p>Este alojamiento no está disponible actualmente.</p>
+          </ion-text>
         </div>
       </ion-card-content>
     </ion-card>
@@ -82,22 +97,69 @@
         </div>
 
         <!-- Estado del usuario y botón de borrar (solo visible para administradores) -->
-    <div *ngIf="isAdmin" class="admin-controls">
-      <div class="status-indicator">
-        <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'" 
-                 [color]="userActive ? 'success' : 'danger'">
-        </ion-icon>
-        <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
-          {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
-        </span>
-      </div>
-      
-      <ion-button color="danger" size="small" (click)="deletePublication()" class="delete-button">
-        <ion-icon name="trash-outline" slot="start"></ion-icon>
-        Eliminar publicación
-      </ion-button>
-    </div>
+        <!-- Controles de administrador (siempre visibles si isAdmin es true) -->
+        <div *ngIf="isAdmin" class="admin-controls">
+          <!-- Indicador de estado del usuario -->
+          <div class="status-indicator">
+            <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'"
+              [color]="userActive ? 'success' : 'danger'">
+            </ion-icon>
+            <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
+              {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
+            </span>
+          </div>
+
+          <!-- Botón de eliminar publicación -->
+          <ion-button color="danger" expand="block" (click)="deletePublication()" class="delete-button">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar publicación
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>
+
+  <!-- Modal de Reserva (se mostrará al hacer clic en el botón) -->
+  <ion-modal [isOpen]="showReservationCalendar">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Reservar Alojamiento</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cancelReservation()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <h2>{{ publication.title }}</h2>
+        <p>Precio por noche: ${{ publication.price }}</p>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha de llegada</ion-label>
+          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="startDate" [min]="minDate" [max]="maxDate"
+            (ionChange)="calculateTotalPrice()">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha de salida</ion-label>
+          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="endDate" [min]="startDate || minDate"
+            [max]="maxDate" (ionChange)="calculateTotalPrice()">
+          </ion-datetime>
+        </ion-item>
+
+        <div class="reservation-summary" *ngIf="startDate && endDate">
+          <h3>Resumen de la reserva</h3>
+          <p>Duración: {{ calculateDuration() }} noches</p>
+          <p>Precio total: ${{ totalPrice }}</p>
+        </div>
+
+        <ion-button expand="block" color="primary" (click)="confirmReservation()"
+          [disabled]="!isValidReservation()">
+          Confirmar Reserva
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

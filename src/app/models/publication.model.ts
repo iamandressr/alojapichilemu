@@ -11,4 +11,8 @@ export interface Publication {
     images: string[];
     createdAt: Date;
     availability: boolean;
+    bookedDates?: {
+        startDate: Date;
+        endDate: Date;
+      }[];
 }

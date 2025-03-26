@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { register } from 'swiper/element';
+import { Reservation } from 'src/app/models/reservation.model';
 
 register();
 
@@ -19,6 +20,14 @@ export class DetallePublicacionPage implements OnInit {
   isAdmin: boolean = false;
   userActive: boolean = false;
   currentUser: any = null;
+
+  // Propiedades para reservas
+  showReservationCalendar: boolean = false;
+  startDate: string;
+  endDate: string;
+  minDate: string = new Date().toISOString();
+  maxDate: string = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
+  totalPrice: number = 0;
 
   slideOpts = {
     initialSlide: 0,
@@ -37,6 +46,8 @@ export class DetallePublicacionPage implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.isLoading = true;
+    
     try {
       // Verificar si el usuario actual es administrador
       await this.checkIfUserIsAdmin();
@@ -58,34 +69,70 @@ export class DetallePublicacionPage implements OnInit {
     }
   }
 
+  async ionViewWillEnter() {
+    console.log('ionViewWillEnter - Verificando autenticación...');
+    
+    // Esperar un momento para asegurarse de que la autenticación se inicialice
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Volver a verificar el rol de administrador cada vez que se entra a la página
+    await this.checkIfUserIsAdmin();
+    console.log('ionViewWillEnter - isAdmin:', this.isAdmin);
+    
+    // Si el usuario es administrador y la publicación está cargada, verificar el estado del autor
+    if (this.isAdmin && this.publication) {
+      await this.checkIfAuthorExists();
+      console.log('ionViewWillEnter - userActive:', this.userActive);
+    }
+  }
+
   async checkIfUserIsAdmin() {
     try {
-      // Obtener el usuario actual - usando await ya que es una promesa
+      // Establecer valor predeterminado
+      this.isAdmin = false;
+      
+      // Obtener el usuario actual
       const auth = this.firebaseSvc.getAuth();
       
-      // Obtener el usuario actual de forma segura
-      let currentUser: any = null;
+      // Manejar correctamente currentUser, que podría ser una promesa
+      let currentUser = null;
       
-      try {
-        // Si auth.currentUser es una promesa, usamos await
+      if (auth.currentUser instanceof Promise) {
         currentUser = await auth.currentUser;
-      } catch (e) {
-        // Si no es una promesa y causa error, intentamos acceder directamente
+      } else {
         currentUser = auth.currentUser;
       }
       
-      if (currentUser && currentUser.uid) {
-        // Obtener el rol del usuario
-        const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
-        this.isAdmin = userData && userData["rol"] === 'admin';
+      if (!currentUser || !currentUser.uid) {
+        console.log('No hay usuario autenticado');
+        this.isAdmin = false;
+        return;
+      }
+      
+      // Obtener el rol del usuario
+      const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
+      
+      if (!userData) {
+        console.log('No se encontraron datos de usuario');
+        this.isAdmin = false;
+        return;
+      }
+      
+      // Verificar si el rol es admin
+      if (userData["rol"] === 'admin') {
+        this.isAdmin = true;
+        console.log('Usuario es administrador');
       } else {
         this.isAdmin = false;
+        console.log('Usuario no es administrador');
       }
+      
     } catch (error) {
       console.error('Error al verificar rol de usuario:', error);
       this.isAdmin = false;
     }
   }
+  
 
   async checkIfAuthorExists() {
     try {
@@ -154,6 +201,132 @@ export class DetallePublicacionPage implements OnInit {
       const toast = await this.toastCtrl.create({
         message: 'Error al eliminar la publicación',
         duration: 2000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  }
+
+  // Métodos para reservas
+  showReservationModal() {
+    this.showReservationCalendar = true;
+  }
+  
+  cancelReservation() {
+    this.showReservationCalendar = false;
+    this.startDate = null;
+    this.endDate = null;
+    this.totalPrice = 0;
+  }
+  
+  calculateDuration() {
+    if (!this.startDate || !this.endDate) return 0;
+    
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  }
+  
+  calculateTotalPrice() {
+    const duration = this.calculateDuration();
+    this.totalPrice = duration * this.publication.price;
+  }
+  
+  isValidReservation() {
+    return this.startDate && this.endDate && this.calculateDuration() > 0 && !this.hasOverlappingReservation();
+  }
+  
+  hasOverlappingReservation() {
+    if (!this.publication.bookedDates || !this.startDate || !this.endDate) return false;
+    
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+    
+    return this.publication.bookedDates.some(booking => {
+      const bookingStart = new Date(booking.startDate);
+      const bookingEnd = new Date(booking.endDate);
+      
+      return (
+        (start >= bookingStart && start <= bookingEnd) ||
+        (end >= bookingStart && end <= bookingEnd) ||
+        (start <= bookingStart && end >= bookingEnd)
+      );
+    });
+  }
+  
+  async confirmReservation() {
+    if (!this.isValidReservation()) return;
+    
+    try {
+      const loading = await this.loadingCtrl.create({
+        message: 'Procesando reserva...'
+      });
+      await loading.present();
+      
+      // Usar el método mejorado para obtener el usuario actual
+      const currentUser: any = await this.firebaseSvc.getCurrentUser();
+      
+      if (!currentUser) {
+        await loading.dismiss();
+        throw new Error('Debes iniciar sesión para realizar una reserva');
+      }
+      
+      // Obtener datos del usuario
+      const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
+      
+      // Crear objeto de reserva
+      const reservation: Reservation = {
+        publicationId: this.publication.id,
+        userId: currentUser.uid,
+        userName: `${userData["name"]} ${userData["apellido"]}`,
+        userEmail: userData["email"],
+        userPhone: userData["telefono"],
+        startDate: new Date(this.startDate),
+        endDate: new Date(this.endDate),
+        totalPrice: this.totalPrice,
+        status: 'pending',
+        createdAt: new Date()
+      };
+      
+      // Guardar la reserva en Firestore
+      const reservationId = await this.firebaseSvc.addDocument('reservations', reservation);
+      
+      // Actualizar las fechas reservadas en la publicación
+      if (!this.publication.bookedDates) {
+        this.publication.bookedDates = [];
+      }
+      
+      this.publication.bookedDates.push({
+        startDate: new Date(this.startDate),
+        endDate: new Date(this.endDate)
+      });
+      
+      await this.firebaseSvc.updateDocument(`publications/${this.publication.id}`, {
+        bookedDates: this.publication.bookedDates
+      });
+      
+      await loading.dismiss();
+      
+      // Mostrar mensaje de éxito
+      const toast = await this.toastCtrl.create({
+        message: 'Reserva realizada con éxito',
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+      
+      // Cerrar el modal
+      this.cancelReservation();
+      
+    } catch (error) {
+      console.error('Error al realizar la reserva:', error);
+      
+      const toast = await this.toastCtrl.create({
+        message: error.message || 'Error al realizar la reserva',
+        duration: 3000,
         color: 'danger'
       });
       await toast.present();

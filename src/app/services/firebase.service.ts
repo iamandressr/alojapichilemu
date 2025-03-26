@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 
@@ -30,8 +30,6 @@ export class FirebaseService {
 
   auth = inject(AngularFireAuth)
   firestore = inject(AngularFirestore)
-
-
 
   // Autenticacion
   async signIn(user: User) {
@@ -76,8 +74,6 @@ async checkAuthState() {
   });
 }
 
-
-
   // Registro
   async signUp(user: User) {
     const credentials = await createUserWithEmailAndPassword(getAuth(), user.email, user.password);
@@ -118,7 +114,7 @@ async checkAuthState() {
   }
 
   getAuth() {
-    return this.auth;
+    return getAuth();
   }
 
   async getCollection(path: string) {
@@ -174,6 +170,14 @@ async checkAuthState() {
     }
   }
 
-
+  async getCurrentUser() {
+    return new Promise((resolve, reject) => {
+      const auth = this.getAuth();
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        unsubscribe();
+        resolve(user);
+      }, reject);
+    });
+  }
 
 }
