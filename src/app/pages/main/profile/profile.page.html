@@ -9,10 +9,15 @@
   <div *ngIf="!isLoading && user">
     <ion-card>
       <ion-card-header>
+        <div class="header-container">
+          <ion-card-title class="ion-text-center">Información Personal</ion-card-title>
+          <ion-button fill="clear" (click)="openEditNameModal()" class="edit-button">
+            <ion-label>Editar Perfil</ion-label>
+          </ion-button>
+        </div>
         <ion-avatar class="profile-avatar ion-margin-auto">
           <ion-icon name="person" size="large"></ion-icon>
         </ion-avatar>
-        <ion-card-title class="ion-text-center">Información Personal</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
@@ -23,9 +28,6 @@
               <h2>Nombre</h2>
               <p>{{ user.name }} {{ user.apellido }}</p>
             </ion-label>
-            <ion-button fill="clear" (click)="openEditNameModal()">
-              <ion-icon name="create-outline" color="primary"></ion-icon>
-            </ion-button>
           </ion-item>
 
           <ion-item>

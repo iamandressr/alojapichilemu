@@ -18,7 +18,9 @@ export class AppComponent implements OnInit {
     private firebaseSvc: FirebaseService,
     private alertCtrl: AlertController,
     private menuCtrl: MenuController,
-  ) {}
+  ) {
+    this.initializeApp();
+  }
 
   ngOnInit() {
     this.checkUser();
@@ -69,5 +71,14 @@ export class AppComponent implements OnInit {
   async navigateAndCloseMenu(path: string) {
     await this.router.navigate([path]);
     await this.menuCtrl.close();
+  }
+
+  async initializeApp() {
+    // Verificar estado de autenticación al iniciar
+    const user = await this.firebaseSvc.checkAuthState();
+    if (user) {
+      // Usuario ya autenticado, redirigir a la página principal
+      console.log('Usuario autenticado:', user);
+    }
   }
 }

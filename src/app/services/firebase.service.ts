@@ -25,7 +25,7 @@ export class FirebaseService {
   };
 
   constructor(private storage: AngularFireStorage ) {
-
+    this.auth.setPersistence('local');
    }
 
   auth = inject(AngularFireAuth)
@@ -40,16 +40,42 @@ export class FirebaseService {
       const uid = credentials.user.uid;
       const path = `users/${uid}`;
       const userData = await this.getDocument(path);
-
+  
       if (!userData['enabled']) {
         throw new Error('Usuario deshabilitado');
       }
-
+  
+      // Guardar información de sesión en localStorage
+      localStorage.setItem('user', JSON.stringify({
+        uid: credentials.user.uid,
+        email: credentials.user.email,
+        // Otros datos que necesites
+      }));
+  
       return credentials;
     } catch (error) {
       throw error;
     }
   }
+
+async checkAuthState() {
+  return new Promise((resolve, reject) => {
+    this.auth.onAuthStateChanged(user => {
+      if (user) {
+        resolve(user);
+      } else {
+        // Intentar restaurar desde localStorage
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          resolve(JSON.parse(savedUser));
+        } else {
+          resolve(null);
+        }
+      }
+    }, reject);
+  });
+}
+
 
 
   // Registro
