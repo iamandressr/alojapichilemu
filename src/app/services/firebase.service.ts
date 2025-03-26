@@ -6,9 +6,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { getFirestore, Firestore, deleteDoc, setDoc, doc, getDoc, collection, getDocs } from '@angular/fire/firestore';
-
-
+import { getFirestore, Firestore, deleteDoc, setDoc, doc, getDoc, collection, getDocs, updateDoc } from '@angular/fire/firestore';
 
 
 @Injectable({
@@ -27,13 +25,13 @@ export class FirebaseService {
   };
 
   constructor(private storage: AngularFireStorage ) {
-    
+
    }
 
   auth = inject(AngularFireAuth)
   firestore = inject(AngularFirestore)
 
-  
+
 
   // Autenticacion
   async signIn(user: User) {
@@ -42,22 +40,22 @@ export class FirebaseService {
       const uid = credentials.user.uid;
       const path = `users/${uid}`;
       const userData = await this.getDocument(path);
-      
+
       if (!userData['enabled']) {
         throw new Error('Usuario deshabilitado');
       }
-      
+
       return credentials;
     } catch (error) {
       throw error;
     }
   }
-  
+
 
   // Registro
   async signUp(user: User) {
     const credentials = await createUserWithEmailAndPassword(getAuth(), user.email, user.password);
-    
+
     const userData = {
       uid: credentials.user.uid,
       email: user.email,
@@ -69,13 +67,13 @@ export class FirebaseService {
       rol: 'cliente',
       enabled: true
     }
-  
+
     const path = `users/${credentials.user.uid}`;
     await this.setDocument(path, userData);
-    
+
     return credentials;
   }
-  
+
 
   //Actualizar perfil
   updateUser(displayName: string) {
@@ -114,7 +112,7 @@ export class FirebaseService {
   async uploadImage(file: File, path: string): Promise<string> {
     const storageRef = this.storage.ref(path);
     const task = storageRef.put(file);
-    
+
     return new Promise((resolve, reject) => {
       task.then(async snapshot => {
         const downloadUrl = await snapshot.ref.getDownloadURL();
@@ -132,5 +130,24 @@ export class FirebaseService {
       throw error;
     }
   }
-  
+
+  // Añade este método a tu FirebaseService si no existe
+  async updateDocument(path: string, data: any) {
+    try {
+      console.log('Intentando actualizar documento en:', path);
+      console.log('Datos a actualizar:', data);
+
+      // Si estás usando AngularFirestore
+      await this.firestore.doc(path).update(data);
+
+      console.log('Documento actualizado con éxito');
+      return true;
+    } catch (error) {
+      console.error('Error updating document:', error);
+      return false;
+    }
+  }
+
+
+
 }
