@@ -9,14 +9,11 @@
 
   <div *ngIf="!isLoading && publication" class="publication-container">
     <!-- Galería de imágenes mejorada -->
-    <img *ngIf="publication.images.length === 1" [src]="publication.images[0]" alt="Imagen de la propiedad" class="single-image">
+    <img *ngIf="publication.images.length === 1" [src]="publication.images[0]" alt="Imagen de la propiedad"
+      class="single-image">
 
-    <swiper-container *ngIf="publication.images.length > 1"
-      [pagination]="true"
-      [navigation]="true"
-      [slidesPerView]="1"
-      [loop]="true"
-      class="image-gallery">
+    <swiper-container *ngIf="publication.images.length > 1" [pagination]="true" [navigation]="true" [slidesPerView]="1"
+      [loop]="true" class="image-gallery">
       <swiper-slide *ngFor="let image of publication.images">
         <img [src]="image" alt="Imagen de la propiedad">
       </swiper-slide>
@@ -82,6 +79,18 @@
             <ion-icon name="call-outline" color="primary" slot="start"></ion-icon>
             <ion-label>+56 {{ publication.userPhone }}</ion-label>
           </ion-item>
+        </div>
+
+        <!-- Estado del usuario (solo visible para administradores) -->
+        <div *ngIf="isAdmin" class="user-status">
+          <div class="status-indicator">
+            <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'"
+              [color]="userActive ? 'success' : 'danger'">
+            </ion-icon>
+            <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
+              {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
+            </span>
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
