@@ -1,19 +1,117 @@
 .loader-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    
-    ion-spinner {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 15px;
-    }
-    
-    p {
-      color: var(--ion-color-medium);
-      font-size: 16px;
-      margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
+    color: blue;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.publication-container {
+  ion-slides {
+    height: 300px;
+    border-radius: 12px;
+    margin-bottom: 5px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
+}
+
+.main-info-card {
+  margin-bottom: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  .property-title {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .price-tag {
+    font-size: 20px;
+    margin-top: 8px;
+  }
+
+  .description-box {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 16px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    .feature-item {
+      --padding-start: 0;
+
+      ion-icon {
+        font-size: 20px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.owner-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  .owner-info {
+    padding: 8px 0;
+
+    .owner-name {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .contact-item {
+      --padding-start: 0;
+      margin-bottom: 8px;
+
+      ion-icon {
+        font-size: 18px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.single-image {
+  width: 100%;
+  height: 230px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+

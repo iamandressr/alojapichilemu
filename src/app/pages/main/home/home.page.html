@@ -8,34 +8,38 @@
   </div>
 
   <!-- Lista de Publicaciones -->
-  <ion-list *ngIf="!isLoading && publications && publications.length > 0">
-    <ion-item *ngFor="let publication of publications" class="publication-item">
-      <ion-thumbnail slot="start">
-        <img [src]="publication.images[0]" alt="publication image">
-      </ion-thumbnail>
-      
-      <ion-label>
-        <h2>{{ publication.title }}</h2>
-        <h3 class="price-text">${{ publication.price }} CLP</h3>
-        <p>
-          <ion-icon name="person-outline"></ion-icon>
-          {{ publication.userName }} {{ publication.userLastName }}
-        </p>
-        <p>
-          <ion-icon name="people-outline"></ion-icon>
-          {{ publication.capacity }} personas
-        </p>
-        <p>
-          <ion-icon name="earth-outline"></ion-icon>
-          {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}
-        </p>
-        <ion-button size="small" (click)="goToPublicationDetail(publication)">
-          Ver más detalles
-          <ion-icon name="arrow-forward" slot="end"></ion-icon>
-        </ion-button>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ion-grid *ngIf="!isLoading && publications && publications.length > 0">
+    <ion-row>
+      <ion-col size="12" size-md="6" *ngFor="let publication of publications">
+        <ion-item class="publication-item">
+          <ion-thumbnail slot="start">
+            <img [src]="publication.images[0]" alt="publication image">
+          </ion-thumbnail>
+
+          <ion-label>
+            <h2>{{ publication.title }}</h2>
+            <h3 class="price-text">${{ publication.price }} CLP</h3>
+            <p>
+              <ion-icon name="person-outline"></ion-icon>
+              {{ publication.userName }} {{ publication.userLastName }}
+            </p>
+            <p>
+              <ion-icon name="people-outline"></ion-icon>
+              {{ publication.capacity }} personas
+            </p>
+            <p>
+              <ion-icon name="earth-outline"></ion-icon>
+              {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}
+            </p>
+            <ion-button size="small" (click)="goToPublicationDetail(publication)">
+              Ver más detalles
+              <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            </ion-button>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && (!publications || publications.length === 0)" class="empty-state">

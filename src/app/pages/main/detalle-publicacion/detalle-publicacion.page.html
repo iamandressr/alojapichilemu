@@ -7,68 +7,82 @@
     <p>Cargando detalles...</p>
   </div>
 
-  <div *ngIf="!isLoading && publication">
-    <!-- Galería de imágenes -->
-    <swiper-container [pagination]="true">
+  <div *ngIf="!isLoading && publication" class="publication-container">
+    <!-- Galería de imágenes mejorada -->
+    <img *ngIf="publication.images.length === 1" [src]="publication.images[0]" alt="Imagen de la propiedad" class="single-image">
+
+    <swiper-container *ngIf="publication.images.length > 1"
+      [pagination]="true"
+      [navigation]="true"
+      [slidesPerView]="1"
+      [loop]="true"
+      class="image-gallery">
       <swiper-slide *ngFor="let image of publication.images">
-        <img [src]="image" style="width: 100%; height: 250px; object-fit: cover;">
+        <img [src]="image" alt="Imagen de la propiedad">
       </swiper-slide>
     </swiper-container>
 
-    <!-- Información de la cabaña -->
-    <ion-card mode="ios">
+    <!-- Información principal -->
+    <ion-card class="main-info-card" mode="ios">
       <ion-card-header>
-        <ion-card-title>{{ publication.title }}</ion-card-title>
-        <ion-card-subtitle>
-          <ion-text color="primary">${{ publication.price }} CLP</ion-text>
+        <ion-card-title class="property-title">{{ publication.title }}</ion-card-title>
+        <ion-card-subtitle class="price-tag">
+          <ion-text color="primary">${{ publication.price | number:'1.0-0' }} CLP</ion-text>
         </ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
-        <p>{{ publication.description }}</p>
-        
-        <ion-item lines="none">
-          <ion-icon name="people-outline" slot="start"></ion-icon>
-          <ion-label>Capacidad: {{ publication.capacity }} personas</ion-label>
-        </ion-item>
+        <div class="description-box">
+          <p>{{ publication.description }}</p>
+        </div>
 
-        <ion-item lines="none">
-          <ion-icon name="location-outline" slot="start"></ion-icon>
-          <ion-label>Ubicación: {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}</ion-label>
-      </ion-item>
+        <div class="features-grid">
+          <ion-item lines="none" class="feature-item">
+            <ion-icon name="people-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>{{ publication.capacity }} personas</ion-label>
+          </ion-item>
 
-      <ion-item lines="none">
-        <ion-icon name="car-outline" slot="start"></ion-icon>
-        <ion-label>Estacionamiento: {{ publication.parking ? 'Sí' : 'No' }}</ion-label>
-    </ion-item>
+          <ion-item lines="none" class="feature-item">
+            <ion-icon name="location-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>{{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}</ion-label>
+          </ion-item>
 
-    <ion-item lines="none">
-      <ion-icon name="calendar-outline" slot="start"></ion-icon>
-      <ion-label>Publicado: {{ publication.createdAt.toDate() | date:'dd/MM/yyyy' }}</ion-label>
-  </ion-item>
+          <ion-item lines="none" class="feature-item">
+            <ion-icon name="car-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>{{ publication.parking ? 'Sí' : 'No' }}</ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="feature-item">
+            <ion-icon name="calendar-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>{{ publication.createdAt.toDate() | date:'dd/MM/yyyy' }}</ion-label>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
 
     <!-- Información del arrendador -->
-    <ion-card mode="ios">
+    <ion-card class="owner-card" mode="ios">
       <ion-card-header>
-        <ion-card-title>Información del Arrendador</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="person-circle-outline" color="primary"></ion-icon>
+          Información del Arrendador
+        </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-item lines="none">
-          <ion-icon name="person-outline" slot="start"></ion-icon>
-          <ion-label>
-            
-            <h2>{{ publication.userName }} {{ publication.userLastName }}</h2>
-            <p><ion-icon name="mail-outline"></ion-icon> {{ publication.userEmail }}</p>
-            
-            <p>
-                <ion-icon name="call-outline"></ion-icon>
-                <strong> +(56) </strong>{{ publication.userPhone }}
-            </p>
-        </ion-label>
-        </ion-item>
+        <div class="owner-info">
+          <h2 class="owner-name">{{ publication.userName }} {{ publication.userLastName }}</h2>
+
+          <ion-item lines="none" class="contact-item">
+            <ion-icon name="mail-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>{{ publication.userEmail }}</ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="contact-item">
+            <ion-icon name="call-outline" color="primary" slot="start"></ion-icon>
+            <ion-label>+56 {{ publication.userPhone }}</ion-label>
+          </ion-item>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>

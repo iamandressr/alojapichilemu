@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { register } from 'swiper/element';
+
+register();
 
 @Component({
   selector: 'app-detalle-publicacion',
@@ -14,10 +17,10 @@ export class DetallePublicacionPage implements OnInit {
   isLoading: boolean = true;
 
   slideOpts = {
-    zoom: false,
-    slidesPerView: 1,
-    spaceBetween: 0,
-    centeredSlides: true
+    initialSlide: 0,
+    speed: 400,
+    loop: true,
+    autoplay: false
   };
 
   constructor(private route: ActivatedRoute,
