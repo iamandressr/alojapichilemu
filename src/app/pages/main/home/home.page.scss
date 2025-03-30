@@ -54,7 +54,7 @@ ion-grid ion-col {
     margin: 0;
     display: block;
     position: relative;
-    
+   
     img {
       position: absolute;
       top: 0;
@@ -70,33 +70,33 @@ ion-grid ion-col {
   ion-label {
     padding: 12px;
     width: 100%;
-    
+   
     h2 {
       font-size: 16px;
       margin-bottom: 4px;
       white-space: normal;
     }
-    
+   
     h3.price-text {
       color: var(--ion-color-primary);
       font-weight: bold;
       font-size: 18px;
       margin-bottom: 8px;
     }
-    
+   
     p {
       font-size: 14px;
       margin-bottom: 4px;
       display: flex;
       align-items: center;
       white-space: normal;
-      
+     
       ion-icon {
         margin-right: 4px;
         flex-shrink: 0;
       }
     }
-    
+   
     ion-button {
       margin-top: 8px;
       width: 100%;
@@ -109,22 +109,22 @@ ion-grid ion-col {
   ion-grid ion-col {
     padding: 12px;
   }
-  
+ 
   .publication-item {
     ion-thumbnail {
       height: 0;
       padding-bottom: 66.67%; // Mantiene la proporción 3:2
     }
-    
+   
     ion-label {
       h2 {
         font-size: 18px;
       }
-      
+     
       h3.price-text {
         font-size: 20px;
       }
-      
+     
       p {
         font-size: 15px;
       }
@@ -176,4 +176,27 @@ ion-card {
   justify-content: center;
   height: 100%;
   padding: 20px;
+}
+
+// Estilos para el filtro
+.filter-container {
+  padding: 10px 8px;
+  
+  ion-segment {
+    --background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    ion-segment-button {
+      --color: var(--ion-color-medium);
+      --color-checked: var(--ion-color-primary);
+      --indicator-color: var(--ion-color-primary);
+      min-height: 40px;
+      font-size: 14px;
+      
+      ion-label {
+        margin: 0;
+      }
+    }
+  }
 }

@@ -1,6 +1,21 @@
 <app-header title="Inicio"></app-header>
 
 <ion-content [scrollEvents]="true" class="ion-padding-bottom">
+  <!-- Filtro de ubicación con ion-segment -->
+  <div class="filter-container ion-padding">
+    <ion-segment [(ngModel)]="selectedLocation" (ionChange)="onLocationChange($event)" mode="ios" color="primary">
+      <ion-segment-button value="todas">
+        <ion-label>Todas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pichilemu">
+        <ion-label>Pichilemu</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cahuil">
+        <ion-label>Cahuil</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
   <!-- Loader -->
   <div *ngIf="isLoading" class="loader-container">
     <ion-spinner name="crescent"></ion-spinner>
@@ -8,15 +23,15 @@
   </div>
 
   <!-- Lista de Publicaciones -->
-  <ion-grid *ngIf="!isLoading && publications && publications.length > 0">
+  <ion-grid *ngIf="!isLoading && filteredPublications && filteredPublications.length > 0">
     <ion-row>
-      <ion-col size="6" *ngFor="let publication of publications">
+      <ion-col size="6" *ngFor="let publication of filteredPublications">
         <ion-item class="publication-item" lines="none" detail="false">
           <div class="item-content">
             <ion-thumbnail>
               <img [src]="publication.images[0]" alt="publication image">
             </ion-thumbnail>
-            
+
             <ion-label>
               <h2>{{ publication.title }}</h2>
               <h3 class="price-text">${{ publication.price }} CLP</h3>
@@ -44,10 +59,11 @@
   </ion-grid>
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading && (!publications || publications.length === 0)" class="empty-state">
+  <div *ngIf="!isLoading && (!filteredPublications || filteredPublications.length === 0)" class="empty-state">
     <ion-icon name="newspaper-outline" style="font-size: 100px; color: var(--ion-color-medium)"></ion-icon>
     <ion-text color="medium">
       <h2>No hay publicaciones para mostrar</h2>
+      <p *ngIf="selectedLocation !== 'todas'">Prueba con otra ubicación o muestra todas las publicaciones</p>
     </ion-text>
   </div>
 </ion-content>
