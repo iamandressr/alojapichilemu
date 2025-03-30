@@ -152,6 +152,7 @@ export class DetallePublicacionPage implements OnInit {
   async deletePublication() {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',
+      mode: 'ios',
       message: '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
       buttons: [
         {
