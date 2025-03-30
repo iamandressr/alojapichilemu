@@ -5,12 +5,15 @@
   <div class="filter-container ion-padding">
     <ion-segment [(ngModel)]="selectedLocation" (ionChange)="onLocationChange($event)" mode="ios" color="primary">
       <ion-segment-button value="todas">
+        <ion-icon name="globe-outline"></ion-icon>
         <ion-label>Todas</ion-label>
       </ion-segment-button>
       <ion-segment-button value="pichilemu">
+        <ion-icon name="location-outline"></ion-icon>
         <ion-label>Pichilemu</ion-label>
       </ion-segment-button>
       <ion-segment-button value="cahuil">
+        <ion-icon name="location-outline"></ion-icon>
         <ion-label>Cahuil</ion-label>
       </ion-segment-button>
     </ion-segment>
