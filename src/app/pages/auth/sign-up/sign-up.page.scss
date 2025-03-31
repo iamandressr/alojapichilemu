@@ -1,0 +1,24 @@
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  .phone-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    color: var(--ion-color-medium);
+    font-size: 16px;
+  }
+  
+  .phone-input {
+    width: 100%;
+  }
+  
+  .phone-input ::ng-deep ion-input {
+    --padding-start: 40px !important;
+  }
+  

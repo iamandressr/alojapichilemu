@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { Router } from '@angular/router';
+import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 import { LoadingController } from '@ionic/angular';
 
@@ -58,7 +59,8 @@ export class CrearPublicacionPage implements OnInit {
       reader.onload = (e: any) => {
         this.selectedImages.push({
           file: files[i],
-          preview: e.target.result
+          preview: e.target.result,
+          dataUrl: e.target.result // Guardar el dataUrl para subirlo después
         });
       };
       reader.readAsDataURL(files[i]);

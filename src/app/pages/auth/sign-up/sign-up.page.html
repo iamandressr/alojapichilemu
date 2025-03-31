@@ -43,7 +43,7 @@
 
       <!-- Input número -->
       <app-custom-input autocomplete="tel" icon="call-outline" [control]="form.controls.telefono" type="tel"
-        label="Número telefónico"></app-custom-input>
+        label="Número telefónico (9 XXXXXXXX)"></app-custom-input>
 
       <div class="validators" *ngIf="form.controls.telefono.errors && form.controls.telefono.touched">
         <div *ngIf="form.controls.telefono.errors?.['required']">El número telefónico es requerido</div>
