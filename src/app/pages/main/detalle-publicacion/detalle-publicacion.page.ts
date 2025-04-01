@@ -333,4 +333,29 @@ export class DetallePublicacionPage implements OnInit {
       await toast.present();
     }
   }
+
+  // Añade estos métodos a tu componente
+formatDate(dateString: string) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+onStartDateChange(event: any) {
+  this.startDate = event.detail.value;
+  // Si la fecha de salida es anterior a la de llegada, ajustarla
+  if (this.endDate && new Date(this.endDate) <= new Date(this.startDate)) {
+    // Establecer la fecha de salida al día siguiente de la llegada
+    const nextDay = new Date(this.startDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    this.endDate = nextDay.toISOString();
+  }
+  this.calculateTotalPrice();
+}
+
+onEndDateChange(event: any) {
+  this.endDate = event.detail.value;
+  this.calculateTotalPrice();
+}
+
 }
