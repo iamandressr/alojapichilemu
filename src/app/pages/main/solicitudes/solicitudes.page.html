@@ -1,13 +1,72 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>solicitudes</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="Solicitudes"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">solicitudes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando solicitudes...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Segmento para filtrar solicitudes -->
+    <ion-segment [(ngModel)]="currentFilter" (ionChange)="filterRequests()" mode="ios">
+      <ion-segment-button value="pending">
+        <ion-icon name="time-outline"></ion-icon>
+        <ion-label>Pendientes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="approved">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <ion-label>Aprobadas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="rejected">
+        <ion-icon name="close-circle-outline"></ion-icon>
+        <ion-label>Rechazadas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Lista de solicitudes -->
+    <ion-list *ngIf="filteredRequests.length > 0">
+      <ion-item-sliding *ngFor="let request of filteredRequests">
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-icon name="person-circle" size="large"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ request.userName }} {{ request.userLastName }}</h2>
+            <p>{{ request.userEmail }}</p>
+            <p *ngIf="request.userPhone">Teléfono: {{ request.userPhone }}</p>
+            <p *ngIf="request.createdAt">
+              Fecha: {{ formatDate(request.createdAt) }}
+            </p>
+            <p *ngIf="request.message" class="request-message">
+              <ion-text color="medium">{{ request.message }}</ion-text>
+            </p>
+          </ion-label>
+          <ion-badge slot="end" [color]="getBadgeColor(request.status)">
+            {{ getStatusText(request.status) }}
+          </ion-badge>
+        </ion-item>
+
+        <ion-item-options side="end" *ngIf="request.status === 'pending'">
+          <ion-item-option color="success" (click)="approveRequest(request)">
+            <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="rejectRequest(request)">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <!-- Mensaje cuando no hay solicitudes -->
+    <ion-card *ngIf="filteredRequests.length === 0">
+      <ion-card-content class="ion-text-center">
+        <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
+        <p>No hay solicitudes {{ getStatusText(currentFilter).toLowerCase() }}s</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

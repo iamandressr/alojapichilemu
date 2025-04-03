@@ -3,6 +3,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { query, where } from 'firebase/firestore';
+
 
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -158,15 +160,16 @@ async checkAuthState() {
     try {
       console.log('Intentando actualizar documento en:', path);
       console.log('Datos a actualizar:', data);
-
-      // Si estás usando AngularFirestore
-      await this.firestore.doc(path).update(data);
-
+  
+      // Usar el método nativo de Firebase en lugar de AngularFirestore
+      const docRef = doc(getFirestore(), path);
+      await updateDoc(docRef, data);
+  
       console.log('Documento actualizado con éxito');
       return true;
     } catch (error) {
       console.error('Error updating document:', error);
-      return false;
+      throw error;
     }
   }
 
@@ -180,4 +183,26 @@ async checkAuthState() {
     });
   }
 
+  async getCollectionQuery(path: string, field: string, operator: any, value: any) {
+    try {
+      const db = getFirestore();
+      const collectionRef = collection(db, path);
+      const q = query(collectionRef, where(field, operator, value));
+      const querySnapshot = await getDocs(q);
+      
+      const docs = [];
+      querySnapshot.forEach((doc) => {
+        docs.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      return docs;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
+  
 }

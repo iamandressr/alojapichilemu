@@ -51,11 +51,25 @@
               <p>{{ user.run }}</p>
             </ion-label>
           </ion-item>
+          <ion-button *ngIf="user?.rol === 'cliente' && !hasPendingRequest" expand="block" color="primary"
+            (click)="requestLandlordRole()" class="request-button">
+            <ion-icon name="business-outline" slot="start"></ion-icon>
+            Solicitar ser Arrendador
+          </ion-button>
+
+          <!-- Mensaje si ya tiene una solicitud pendiente -->
+          <ion-item *ngIf="user?.rol === 'cliente' && hasPendingRequest" lines="none" class="pending-request">
+            <ion-icon name="hourglass-outline" slot="start" color="warning"></ion-icon>
+            <ion-label color="warning">
+              <h2>Solicitud en proceso</h2>
+              <p>Tu solicitud para ser arrendador está siendo revisada</p>
+            </ion-label>
+          </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
   </div>
-
+  
   <div *ngIf="!isLoading && !user" class="ion-text-center ion-padding">
     <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
     <p>No se pudo cargar la información del perfil</p>
