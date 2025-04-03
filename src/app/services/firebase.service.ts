@@ -204,5 +204,14 @@ async checkAuthState() {
       return [];
     }
   }
+
+  async resetPassword(email: string) {
+    try {
+      return await this.auth.sendPasswordResetEmail(email);
+    } catch (error) {
+      console.error('Error al enviar correo de recuperación:', error);
+      throw error;
+    }
+  }
   
 }
