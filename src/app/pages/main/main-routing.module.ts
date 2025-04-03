@@ -34,6 +34,10 @@ const routes: Routes = [
   },  {
     path: 'solicitudes',
     loadChildren: () => import('./solicitudes/solicitudes.module').then( m => m.SolicitudesPageModule)
+  },
+  {
+    path: 'reservas',
+    loadChildren: () => import('./reservas/reservas.module').then( m => m.ReservasPageModule)
   }
 
 
