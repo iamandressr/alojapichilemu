@@ -1,1 +1,77 @@
-<app-header title="Mis reservas"></app-header>
+<app-header title="Mis Reservas"></app-header>
+<ion-content>
+
+  <!-- Segmento para cambiar entre reservas realizadas y recibidas (visible para arrendadores y administradores) -->
+  <ion-segment mode="ios" [(ngModel)]="selectedSegment" *ngIf="userRole === 'arrendador' || userRole === 'admin'" class="ion-padding">
+    <ion-segment-button value="received">
+      <ion-label>Solicitudes Recibidas</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="made">
+      <ion-label>Mis Reservas</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="isLoading" class="ion-padding ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando reservas...</p>
+  </div>
+
+  <!-- Sección para cuando no hay reservas -->
+  <div *ngIf="!isLoading && getFilteredReservations().length === 0" class="ion-padding ion-text-center">
+    <ion-icon name="calendar-outline" style="font-size: 64px; color: var(--ion-color-medium)"></ion-icon>
+    <h4>No tienes reservas</h4>
+    <p *ngIf="userRole === 'cliente' || selectedSegment === 'made'">Aún no has realizado ninguna reserva.</p>
+    <p *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received'">Aún no hay reservas para tus propiedades.</p>
+  </div>
+
+  <!-- Lista de reservas -->
+  <ion-list *ngIf="!isLoading && getFilteredReservations().length > 0">
+    <ion-item-group *ngFor="let reservation of getFilteredReservations()">
+      <ion-item-divider sticky>
+        <ion-label>
+          {{ reservation.publicationTitle }}
+        </ion-label>
+        <ion-chip slot="end" [color]="getStatusColor(reservation.status)">
+          {{ getStatusText(reservation.status) }}
+        </ion-chip>
+      </ion-item-divider>
+      <ion-item>
+        <ion-label>
+          <!-- Mostrar información diferente según el tipo de reserva -->
+          <ng-container *ngIf="userRole === 'cliente' || selectedSegment === 'made'">
+            <h2><strong>Propiedad de:</strong> {{ reservation.ownerName || 'No disponible' }}</h2>
+            <p><strong>Email:</strong> {{ reservation.ownerEmail || 'No disponible' }}</p>
+            <p><strong>Teléfono:</strong> {{ reservation.ownerPhone || 'No disponible' }}</p>
+          </ng-container>
+          <ng-container *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received'">
+            <h2><strong>Cliente:</strong> {{ reservation.userName }}</h2>
+            <p><strong>RUN:</strong> {{ reservation.userRun || 'No disponible' }}</p>
+            <p><strong>Email:</strong> {{ reservation.userEmail }}</p>
+            <p><strong>Teléfono:</strong> {{ reservation.userPhone || 'No disponible' }}</p>
+          </ng-container>
+          <p><strong>Fechas:</strong> {{ formatDate(reservation.startDate) }} - {{ formatDate(reservation.endDate) }}</p>
+          <p><strong>Precio total:</strong> ${{ reservation.totalPrice.toLocaleString('es-CL') }}</p>
+          <p><strong>Fecha de reserva:</strong> {{ formatDate(reservation.createdAt) }}</p>
+        </ion-label>
+      </ion-item>
+      <!-- Botones de acción para arrendadores y administradores en las reservas recibidas pendientes -->
+      <ion-item *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received' && reservation.status === 'pending'">
+        <ion-button expand="block" color="success" (click)="updateReservationStatus(reservation.id, 'confirmed')">
+          <ion-icon name="checkmark" slot="start"></ion-icon>
+          Confirmar Reserva
+        </ion-button>
+        <ion-button expand="block" color="danger" (click)="updateReservationStatus(reservation.id, 'cancelled')">
+          <ion-icon name="close" slot="start"></ion-icon>
+          Cancelar Reserva
+        </ion-button>
+      </ion-item>
+      <!-- Botón para cancelar reserva (solo para clientes en reservas pendientes) -->
+      <ion-item *ngIf="(userRole === 'cliente' || selectedSegment === 'made') && reservation.status === 'pending'">
+        <ion-button expand="block" color="danger" (click)="cancelMyReservation(reservation.id)">
+          <ion-icon name="close" slot="start"></ion-icon>
+          Cancelar Mi Reserva
+        </ion-button>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>

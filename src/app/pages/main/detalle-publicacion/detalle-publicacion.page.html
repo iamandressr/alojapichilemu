@@ -130,32 +130,47 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-
       <ion-content class="ion-padding">
         <h2>{{ publication.title }}</h2>
-        <p>Precio por noche: ${{ publication.price }}</p>
-
+        <p>Precio por noche: ${{ publication.price | number:'1.0-0' }}</p>
+        
         <ion-item>
           <ion-label position="stacked">Fecha de llegada</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="startDate" [min]="minDate" [max]="maxDate"
-            (ionChange)="calculateTotalPrice()">
+          <ion-datetime 
+            displayFormat="DD/MM/YYYY" 
+            [(ngModel)]="startDate" 
+            [min]="minDate" 
+            [max]="maxDate"
+            (ionChange)="onStartDateChange($event)">
           </ion-datetime>
         </ion-item>
-
+        
         <ion-item>
           <ion-label position="stacked">Fecha de salida</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="endDate" [min]="startDate || minDate"
-            [max]="maxDate" (ionChange)="calculateTotalPrice()">
+          <ion-datetime 
+            displayFormat="DD/MM/YYYY" 
+            [(ngModel)]="endDate" 
+            [min]="startDate || minDate"
+            [max]="maxDate" 
+            (ionChange)="onEndDateChange($event)">
           </ion-datetime>
         </ion-item>
-
+        
         <div class="reservation-summary" *ngIf="startDate && endDate">
           <h3>Resumen de la reserva</h3>
           <p>Duración: {{ calculateDuration() }} noches</p>
-          <p>Precio total: ${{ totalPrice }}</p>
+          <p>Precio total: ${{ totalPrice | number:'1.0-0' }}</p>
         </div>
-
-        <ion-button expand="block" color="primary" (click)="confirmReservation()"
+        
+        <div *ngIf="hasOverlappingReservation()" class="error-message">
+          <ion-icon name="alert-circle"></ion-icon>
+          Las fechas seleccionadas ya están reservadas. Por favor, elige otras fechas.
+        </div>
+        
+        <ion-button 
+          expand="block" 
+          color="primary" 
+          (click)="confirmReservation()"
           [disabled]="!isValidReservation()">
           Confirmar Reserva
         </ion-button>

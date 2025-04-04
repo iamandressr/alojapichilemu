@@ -14,7 +14,6 @@ register();
   standalone: false
 })
 export class DetallePublicacionPage implements OnInit {
-
   publication: any;
   isLoading: boolean = true;
   isAdmin: boolean = false;
@@ -43,7 +42,7 @@ export class DetallePublicacionPage implements OnInit {
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.isLoading = true;
@@ -126,13 +125,12 @@ export class DetallePublicacionPage implements OnInit {
         this.isAdmin = false;
         console.log('Usuario no es administrador');
       }
-      
+    
     } catch (error) {
       console.error('Error al verificar rol de usuario:', error);
       this.isAdmin = false;
     }
   }
-  
 
   async checkIfAuthorExists() {
     try {
@@ -168,7 +166,6 @@ export class DetallePublicacionPage implements OnInit {
         }
       ]
     });
-
     await alert.present();
   }
 
@@ -178,13 +175,10 @@ export class DetallePublicacionPage implements OnInit {
         message: 'Eliminando publicación...'
       });
       await loading.present();
-
       // Eliminar la publicación
       const path = `publications/${this.publication.id}`;
       await this.firebaseSvc.deleteDocument(path);
-
       await loading.dismiss();
-
       // Mostrar mensaje de éxito
       const toast = await this.toastCtrl.create({
         message: 'Publicación eliminada correctamente',
@@ -192,7 +186,6 @@ export class DetallePublicacionPage implements OnInit {
         color: 'success'
       });
       await toast.present();
-
       // Navegar de vuelta a la página anterior
       this.router.navigate(['/main/home']);
     } catch (error) {
@@ -212,14 +205,14 @@ export class DetallePublicacionPage implements OnInit {
   showReservationModal() {
     this.showReservationCalendar = true;
   }
-  
+
   cancelReservation() {
     this.showReservationCalendar = false;
     this.startDate = null;
     this.endDate = null;
     this.totalPrice = 0;
   }
-  
+
   calculateDuration() {
     if (!this.startDate || !this.endDate) return 0;
     
@@ -230,16 +223,16 @@ export class DetallePublicacionPage implements OnInit {
     
     return diffDays;
   }
-  
+
   calculateTotalPrice() {
     const duration = this.calculateDuration();
     this.totalPrice = duration * this.publication.price;
   }
-  
+
   isValidReservation() {
     return this.startDate && this.endDate && this.calculateDuration() > 0 && !this.hasOverlappingReservation();
   }
-  
+
   hasOverlappingReservation() {
     if (!this.publication.bookedDates || !this.startDate || !this.endDate) return false;
     
@@ -257,9 +250,17 @@ export class DetallePublicacionPage implements OnInit {
       );
     });
   }
-  
+
   async confirmReservation() {
-    if (!this.isValidReservation()) return;
+    if (!this.isValidReservation()) {
+      const toast = await this.toastCtrl.create({
+        message: 'Por favor selecciona fechas válidas para tu reserva',
+        duration: 2000,
+        color: 'warning'
+      });
+      await toast.present();
+      return;
+    }
     
     try {
       const loading = await this.loadingCtrl.create({
@@ -267,7 +268,7 @@ export class DetallePublicacionPage implements OnInit {
       });
       await loading.present();
       
-      // Usar el método mejorado para obtener el usuario actual
+      // Obtener el usuario actual
       const currentUser: any = await this.firebaseSvc.getCurrentUser();
       
       if (!currentUser) {
@@ -278,6 +279,11 @@ export class DetallePublicacionPage implements OnInit {
       // Obtener datos del usuario
       const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
       
+      if (!userData) {
+        await loading.dismiss();
+        throw new Error('No se encontraron datos de usuario');
+      }
+      
       // Crear objeto de reserva
       const reservation: Reservation = {
         publicationId: this.publication.id,
@@ -285,6 +291,7 @@ export class DetallePublicacionPage implements OnInit {
         userName: `${userData["name"]} ${userData["apellido"]}`,
         userEmail: userData["email"],
         userPhone: userData["telefono"],
+        userRun: userData["run"] || '', // Obtener el RUN del perfil del usuario
         startDate: new Date(this.startDate),
         endDate: new Date(this.endDate),
         totalPrice: this.totalPrice,
@@ -334,28 +341,27 @@ export class DetallePublicacionPage implements OnInit {
     }
   }
 
-  // Añade estos métodos a tu componente
-formatDate(dateString: string) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
-onStartDateChange(event: any) {
-  this.startDate = event.detail.value;
-  // Si la fecha de salida es anterior a la de llegada, ajustarla
-  if (this.endDate && new Date(this.endDate) <= new Date(this.startDate)) {
-    // Establecer la fecha de salida al día siguiente de la llegada
-    const nextDay = new Date(this.startDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    this.endDate = nextDay.toISOString();
+  // Métodos para formatear fechas y manejar cambios en el calendario
+  formatDate(dateString: string) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
-  this.calculateTotalPrice();
-}
 
-onEndDateChange(event: any) {
-  this.endDate = event.detail.value;
-  this.calculateTotalPrice();
-}
+  onStartDateChange(event: any) {
+    this.startDate = event.detail.value;
+    // Si la fecha de salida es anterior a la de llegada, ajustarla
+    if (this.endDate && new Date(this.endDate) <= new Date(this.startDate)) {
+      // Establecer la fecha de salida al día siguiente de la llegada
+      const nextDay = new Date(this.startDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      this.endDate = nextDay.toISOString();
+    }
+    this.calculateTotalPrice();
+  }
 
+  onEndDateChange(event: any) {
+    this.endDate = event.detail.value;
+    this.calculateTotalPrice();
+  }
 }
