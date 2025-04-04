@@ -364,4 +364,17 @@ export class DetallePublicacionPage implements OnInit {
     this.endDate = event.detail.value;
     this.calculateTotalPrice();
   }
+
+  formatLocation(location: string): string {
+    switch(location) {
+      case 'punta-de-lobos':
+        return 'Punta de Lobos';
+      case 'pichilemu':
+        return 'Pichilemu';
+      case 'cahuil':
+        return 'Cahuil';
+      default:
+        return location;
+    }
+  }
 }

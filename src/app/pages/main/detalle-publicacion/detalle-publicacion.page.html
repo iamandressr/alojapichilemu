@@ -41,8 +41,8 @@
 
           <ion-item lines="none" class="feature-item">
             <ion-icon name="location-outline" color="primary" slot="start"></ion-icon>
-            <ion-label>{{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}</ion-label>
-          </ion-item>
+            <ion-label>{{ formatLocation(publication.location) }}</ion-label>
+          </ion-item>          
 
           <ion-item lines="none" class="feature-item">
             <ion-icon name="car-outline" color="primary" slot="start"></ion-icon>

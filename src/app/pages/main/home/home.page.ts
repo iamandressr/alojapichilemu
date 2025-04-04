@@ -78,4 +78,17 @@ export class HomePage implements OnInit {
     // Recargar publicaciones cada vez que se entra a la página
     this.getPublications();
   }
+
+  formatLocation(location: string): string {
+    switch(location) {
+      case 'punta-de-lobos':
+        return 'Punta de Lobos';
+      case 'pichilemu':
+        return 'Pichilemu';
+      case 'cahuil':
+        return 'Cahuil';
+      default:
+        return location;
+    }
+  }
 }

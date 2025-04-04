@@ -52,7 +52,7 @@
               </p>
               <p>
                 <ion-icon name="earth-outline"></ion-icon>
-                {{ publication.location.charAt(0).toUpperCase() + publication.location.slice(1) }}
+                {{ formatLocation(publication.location) }}
               </p>
               <ion-button size="small" expand="block" (click)="goToPublicationDetail(publication)">
                 Ver detalles
