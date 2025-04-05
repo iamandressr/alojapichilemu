@@ -1,6 +1,6 @@
 <app-header title="Mis Reservas"></app-header>
-<ion-content>
 
+<ion-content>
   <!-- Segmento para cambiar entre reservas realizadas y recibidas (visible para arrendadores y administradores) -->
   <ion-segment mode="ios" [(ngModel)]="selectedSegment" *ngIf="userRole === 'arrendador' || userRole === 'admin'" class="ion-padding">
     <ion-segment-button value="received">
@@ -35,6 +35,7 @@
           {{ getStatusText(reservation.status) }}
         </ion-chip>
       </ion-item-divider>
+
       <ion-item>
         <ion-label>
           <!-- Mostrar información diferente según el tipo de reserva -->
@@ -43,17 +44,30 @@
             <p><strong>Email:</strong> {{ reservation.ownerEmail || 'No disponible' }}</p>
             <p><strong>Teléfono:</strong> {{ reservation.ownerPhone || 'No disponible' }}</p>
           </ng-container>
+
           <ng-container *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received'">
             <h2><strong>Cliente:</strong> {{ reservation.userName }}</h2>
             <p><strong>RUN:</strong> {{ reservation.userRun || 'No disponible' }}</p>
             <p><strong>Email:</strong> {{ reservation.userEmail }}</p>
             <p><strong>Teléfono:</strong> {{ reservation.userPhone || 'No disponible' }}</p>
           </ng-container>
+
           <p><strong>Fechas:</strong> {{ formatDate(reservation.startDate) }} - {{ formatDate(reservation.endDate) }}</p>
           <p><strong>Precio total:</strong> ${{ reservation.totalPrice.toLocaleString('es-CL') }}</p>
           <p><strong>Fecha de reserva:</strong> {{ formatDate(reservation.createdAt) }}</p>
+          
+          <!-- Mostrar estado del arriendo si está activo -->
+          <p *ngIf="reservation.rentalActive">
+            <strong>Estado:</strong> <ion-text color="success"> Arriendo activo desde {{ formatDate(reservation.rentalStartDate) }}</ion-text>
+          </p>
+          
+          <!-- Mostrar estado del arriendo si está finalizado -->
+          <p *ngIf="reservation.rentalFinished">
+            <strong>Estado:</strong> <ion-text color="danger"> Arriendo finalizado el {{ formatDate(reservation.rentalEndDate) }}</ion-text>
+          </p>
         </ion-label>
       </ion-item>
+
       <!-- Botones de acción para arrendadores y administradores en las reservas recibidas pendientes -->
       <ion-item *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received' && reservation.status === 'pending'">
         <ion-button expand="block" color="success" (click)="updateReservationStatus(reservation.id, 'confirmed')">
@@ -65,12 +79,45 @@
           Cancelar Reserva
         </ion-button>
       </ion-item>
+
       <!-- Botón para cancelar reserva (solo para clientes en reservas pendientes) -->
       <ion-item *ngIf="(userRole === 'cliente' || selectedSegment === 'made') && reservation.status === 'pending'">
         <ion-button expand="block" color="danger" (click)="cancelMyReservation(reservation.id)">
           <ion-icon name="close" slot="start"></ion-icon>
           Cancelar Mi Reserva
         </ion-button>
+      </ion-item>
+
+      <!-- Botón para gestionar arriendo (solo para arrendadores con reservas confirmadas) -->
+      <ion-item *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received' && reservation.status === 'confirmed' && !reservation.rentalActive && !reservation.rentalFinished">
+        <ion-button expand="block" color="primary" (click)="openRentalManagement(reservation)">
+          <ion-icon name="home" slot="start"></ion-icon>
+          Gestionar Arriendo
+        </ion-button>
+      </ion-item>
+
+      <!-- Botón para finalizar arriendo (solo para arrendadores con arriendos activos) -->
+      <ion-item *ngIf="(userRole === 'arrendador' || userRole === 'admin') && selectedSegment === 'received' && reservation.status === 'confirmed' && reservation.rentalActive && !reservation.rentalFinished">
+        <ion-button expand="block" color="danger" (click)="finishRental(reservation)">
+          <ion-icon name="flag" slot="start"></ion-icon>
+          Finalizar Arriendo
+        </ion-button>
+      </ion-item>
+
+      <!-- Botón para valorar experiencia (solo para clientes con arriendos finalizados) -->
+      <ion-item *ngIf="(userRole === 'cliente' || selectedSegment === 'made') && reservation.status === 'confirmed' && reservation.rentalFinished && !reservation.rated">
+        <ion-button expand="block" color="tertiary" (click)="rateExperience(reservation)">
+          <ion-icon name="star" slot="start"></ion-icon>
+          Valorar Experiencia
+        </ion-button>
+      </ion-item>
+
+      <!-- Mensaje de valoración enviada -->
+      <ion-item *ngIf="(userRole === 'cliente' || selectedSegment === 'made') && reservation.status === 'confirmed' && reservation.rentalFinished && reservation.rated">
+        <ion-label color="success" class="ion-text-center">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          Has valorado esta experiencia. ¡Gracias por tu feedback!
+        </ion-label>
       </ion-item>
     </ion-item-group>
   </ion-list>

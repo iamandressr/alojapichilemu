@@ -272,4 +272,23 @@ ion-modal {
   }
 }
 
+.rating-section {
+  margin: 10px 0 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.no-ratings {
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
+
+.no-ratings ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+
 
