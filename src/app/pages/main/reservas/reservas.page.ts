@@ -75,6 +75,9 @@ export class ReservasPage implements OnInit {
         await this.loadReservationsAsOwner();
       }
       
+      // Eliminar duplicados basados en el ID de la reserva
+      this.reservations = this.removeDuplicateReservations(this.reservations);
+      
       // Ordenar reservas por fecha de creación (más recientes primero)
       this.reservations.sort((a, b) => {
         return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
@@ -85,6 +88,21 @@ export class ReservasPage implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+  
+  // Método para eliminar reservas duplicadas
+  removeDuplicateReservations(reservations: any[]): any[] {
+    const uniqueReservations = [];
+    const seenIds = new Set();
+    
+    for (const reservation of reservations) {
+      if (!seenIds.has(reservation.id)) {
+        seenIds.add(reservation.id);
+        uniqueReservations.push(reservation);
+      }
+    }
+    
+    return uniqueReservations;
   }
 
   async loadReservationsAsTenant() {

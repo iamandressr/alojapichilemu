@@ -1,27 +1,32 @@
 <app-header title="Inicio"></app-header>
 
 <ion-content [scrollEvents]="true" class="ion-padding-bottom">
-  <!-- Filtro de ubicación con ion-segment -->
-  <div class="filter-container ion-padding">
-    <ion-segment [(ngModel)]="selectedLocation" (ionChange)="onLocationChange($event)" mode="ios" color="primary">
-      <ion-segment-button value="todas">
-        <ion-icon name="globe-outline"></ion-icon>
-        <ion-label>Todas</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="pichilemu">
-        <ion-icon name="location-outline"></ion-icon>
-        <ion-label>Pichilemu</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="punta-de-lobos">
-        <ion-icon name="location-outline"></ion-icon>
-        <ion-label>Punta de lobos</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="cahuil">
-        <ion-icon name="location-outline"></ion-icon>
-        <ion-label>Cahuil</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
+  <!-- Filtro de ubicación con ion-segment en dos filas -->
+<div class="filter-container ion-padding">
+  <!-- Primera fila: opción "Todas" -->
+  <ion-segment [(ngModel)]="selectedLocation" (ionChange)="onLocationChange($event)" mode="ios" color="primary" class="location-segment">
+    <ion-segment-button value="todas" class="todas-button">
+      <ion-icon name="globe-outline"></ion-icon>
+      <ion-label>Todas</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  
+  <!-- Segunda fila: opciones específicas de ubicación -->
+  <ion-segment style="margin-top: 8px;" [(ngModel)]="selectedLocation" (ionChange)="onLocationChange($event)" mode="ios" color="primary" class="location-segment">
+    <ion-segment-button value="pichilemu">
+      <ion-icon name="location-outline"></ion-icon>
+      <ion-label>Pichilemu</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="punta-de-lobos">
+      <ion-icon name="location-outline"></ion-icon>
+      <ion-label>Punta de Lobos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="cahuil">
+      <ion-icon name="location-outline"></ion-icon>
+      <ion-label>Cahuil</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</div>
 
   <!-- Loader -->
   <div *ngIf="isLoading" class="loader-container">

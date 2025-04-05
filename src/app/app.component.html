@@ -41,6 +41,11 @@
           <ion-label>Usuarios</ion-label>
         </ion-item>
 
+        <ion-item *ngIf="userData?.rol === 'admin'" (click)="navigateAndCloseMenu('/main/estadisticas')">
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+          <ion-label>Estadisticas</ion-label>
+        </ion-item>
+
         <ion-item *ngIf="userData?.rol === 'admin'" (click)="navigateAndCloseMenu('/main/solicitudes')">
           <ion-icon name="person-add-outline" slot="start"></ion-icon>
           <ion-label>Solicitudes</ion-label>

@@ -1,0 +1,142 @@
+<app-header title="Estadísticas"></app-header>
+
+<ion-content>
+  <div *ngIf="isLoading" class="ion-padding ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <div *ngIf="error" class="ion-padding">
+    <ion-text color="danger">
+      <p>{{ error }}</p>
+    </ion-text>
+    <ion-button expand="block" (click)="loadStats()">
+      <ion-icon slot="start" name="refresh"></ion-icon>
+      Reintentar
+    </ion-button>
+  </div>
+
+  <div *ngIf="!isLoading && !error && stats" class="ion-padding">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Resumen de Uso</ion-card-title>
+        <ion-card-subtitle>Plan Gratuito de Firebase</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <!-- Almacenamiento -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Almacenamiento</ion-card-title>
+        <ion-card-subtitle>Límite: 1GB</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-progress-bar 
+          [value]="stats.storage.usagePercentage / 100" 
+          [color]="getUsageColor(stats.storage.usagePercentage)">
+        </ion-progress-bar>
+        <p class="ion-text-end">
+          {{ stats.storage.totalSizeMB.toFixed(2) }} MB / 1024 MB 
+          ({{ stats.storage.usagePercentage.toFixed(2) }}%)
+        </p>
+
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label>Usuarios</ion-label>
+            <ion-note slot="end">{{ stats.storage.usersSizeMB.toFixed(2) }} MB</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Publicaciones</ion-label>
+            <ion-note slot="end">{{ stats.storage.publicationsSizeMB.toFixed(2) }} MB</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Reservas</ion-label>
+            <ion-note slot="end">{{ stats.storage.reservationsSizeMB.toFixed(2) }} MB</ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Operaciones diarias -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Operaciones Diarias (Estimadas)</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>Lecturas</ion-label>
+            <ion-note slot="end">
+              {{ formatNumber(stats.dailyOperations.reads.estimated) }} / 
+              {{ formatNumber(stats.dailyOperations.reads.limit) }}
+              ({{ ((stats.dailyOperations.reads.estimated / stats.dailyOperations.reads.limit) * 100).toFixed(2) }}%)
+            </ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Escrituras</ion-label>
+            <ion-note slot="end">
+              {{ formatNumber(stats.dailyOperations.writes.estimated) }} / 
+              {{ formatNumber(stats.dailyOperations.writes.limit) }}
+              ({{ ((stats.dailyOperations.writes.estimated / stats.dailyOperations.writes.limit) * 100).toFixed(2) }}%)
+            </ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Eliminaciones</ion-label>
+            <ion-note slot="end">
+              {{ formatNumber(stats.dailyOperations.deletes.estimated) }} / 
+              {{ formatNumber(stats.dailyOperations.deletes.limit) }}
+              ({{ ((stats.dailyOperations.deletes.estimated / stats.dailyOperations.deletes.limit) * 100).toFixed(2) }}%)
+            </ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Documentos -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Documentos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>Usuarios</ion-label>
+            <ion-note slot="end">{{ formatNumber(stats.documentCounts.users) }}</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Publicaciones</ion-label>
+            <ion-note slot="end">{{ formatNumber(stats.documentCounts.publications) }}</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label>Reservas</ion-label>
+            <ion-note slot="end">{{ formatNumber(stats.documentCounts.reservations) }}</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label><strong>Total</strong></ion-label>
+            <ion-note slot="end"><strong>{{ formatNumber(stats.documentCounts.total) }}</strong></ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Notas</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>
+          <ion-text color="medium">
+            Las operaciones diarias son estimaciones basadas en el número de documentos y patrones de uso típicos.
+            Para un monitoreo más preciso, considera implementar contadores de operaciones en tu aplicación.
+          </ion-text>
+        </p>
+        <p>
+          <ion-text color="medium">
+            El tamaño de almacenamiento es una aproximación basada en el tamaño de los documentos JSON.
+            El tamaño real puede variar ligeramente.
+          </ion-text>
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
