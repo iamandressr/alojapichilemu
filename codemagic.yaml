@@ -1,0 +1,25 @@
+workflows:
+  build-ios:
+    name: Build AlojaPichilemu iOS
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+    environment:
+      vars:
+        APP_NAME: "AlojaPichilemu"
+      node: 18.18.2
+      xcode: latest
+    scripts:
+      - name: Instalar dependencias
+        script: |
+          npm install -g @ionic/cli
+          npm ci
+      - name: Construir app Ionic
+        script: |
+          ionic build
+          npx cap sync ios
+      - name: Construir IPA con Xcode
+        script: |
+          cd ios/App
+          xcodebuild -scheme App -sdk iphoneos -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+    artifacts:
+      - ios/App/build/Debug-iphoneos/*.app
