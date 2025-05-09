@@ -12,6 +12,7 @@ workflows:
       - name: Instalar dependencias
         script: |
           npm install -g @ionic/cli
+          npm install --force
           npm ci
       - name: Construir app Ionic
         script: |
