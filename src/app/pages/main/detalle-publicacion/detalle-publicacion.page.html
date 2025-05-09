@@ -1,4 +1,5 @@
 <app-header title="Detalles" backButton="/main/home"></app-header>
+
 <ion-content class="ion-padding">
   <!-- Loader -->
   <div *ngIf="isLoading" class="loader-container">
@@ -7,40 +8,54 @@
   </div>
 
   <div *ngIf="!isLoading && publication" class="publication-container">
-    <!-- Galería de imágenes mejorada -->
-    <img *ngIf="publication.images.length === 1" [src]="publication.images[0]" alt="Imagen de la propiedad"
-      class="single-image">
-    <swiper-container *ngIf="publication.images.length > 1" [pagination]="true" [navigation]="true" [slidesPerView]="1"
-      [loop]="true" class="image-gallery">
+    <!-- Imagen única -->
+    <img
+      *ngIf="publication.images.length === 1"
+      [src]="publication.images[0]"
+      alt="Imagen de la propiedad"
+      class="single-image"
+    />
+
+    <!-- Galería Swiper -->
+    <swiper-container
+      [loop]="true"
+      [speed]="400"
+      *ngIf="publication?.images?.length > 0"
+    >
       <swiper-slide *ngFor="let image of publication.images">
-        <img [src]="image" alt="Imagen de la propiedad">
+        <img [src]="image" alt="Imagen de la publicación" />
       </swiper-slide>
     </swiper-container>
 
-    <!-- Información principal -->
+    <!-- Información de la propiedad -->
     <ion-card class="main-info-card" mode="ios">
       <ion-card-header>
-        <ion-card-title class="property-title">{{ publication.title }}</ion-card-title>
+        <ion-card-title class="property-title"
+          >{{ publication.title }}</ion-card-title
+        >
         <ion-card-subtitle class="price-tag">
-          <ion-text color="primary">${{ publication.price | number:'1.0-0' }} CLP</ion-text>
+          <ion-text color="primary"
+            >${{ publication.price | number:'1.0-0' }} CLP</ion-text
+          >
         </ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
-        <!-- Sección de valoraciones -->
+        <!-- Valoraciones -->
         <div class="rating-section">
-          <!-- Mostrar valoraciones si existen -->
-          <div *ngIf="publication.ratingCount && publication.ratingCount > 0" class="rating-stars">
-            <ion-icon *ngFor="let star of [1,2,3,4,5]"
-              [name]="star <= publication.averageRating ? 'star' : 'star-outline'" color="warning">
+          <div *ngIf="publication.ratingCount > 0" class="rating-stars">
+            <ion-icon
+              *ngFor="let star of [1,2,3,4,5]"
+              [name]="star <= publication.averageRating ? 'star' : 'star-outline'"
+              color="warning"
+            >
             </ion-icon>
             <span class="rating-text">
-              {{ publication.averageRating.toFixed(1) }} ({{ publication.ratingCount }} valoraciones)
+              {{ publication.averageRating.toFixed(1) }} ({{
+              publication.ratingCount }} valoraciones)
             </span>
           </div>
-
-          <!-- Mensaje cuando no hay valoraciones -->
-          <div *ngIf="!publication.ratingCount || publication.ratingCount === 0" class="no-ratings">
+          <div *ngIf="!publication.ratingCount" class="no-ratings">
             <ion-icon name="star-outline" color="medium"></ion-icon>
             <span>Esta propiedad aún no ha sido valorada</span>
           </div>
@@ -52,31 +67,56 @@
 
         <div class="features-grid">
           <ion-item lines="none" class="feature-item">
-            <ion-icon name="people-outline" color="primary" slot="start"></ion-icon>
+            <ion-icon
+              name="people-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
             <ion-label>{{ publication.capacity }} personas</ion-label>
           </ion-item>
           <ion-item lines="none" class="feature-item">
-            <ion-icon name="location-outline" color="primary" slot="start"></ion-icon>
+            <ion-icon
+              name="location-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
             <ion-label>{{ formatLocation(publication.location) }}</ion-label>
           </ion-item>
-
           <ion-item lines="none" class="feature-item">
-            <ion-icon name="car-outline" color="primary" slot="start"></ion-icon>
-            <ion-label>{{ publication.estacionamiento === 'si' ? 'Sí' : 'No' }}</ion-label>
+            <ion-icon
+              name="car-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
+            <ion-label
+              >{{ publication.estacionamiento === 'si' ? 'Sí' : 'No'
+              }}</ion-label
+            >
           </ion-item>
           <ion-item lines="none" class="feature-item">
-            <ion-icon name="calendar-outline" color="primary" slot="start"></ion-icon>
-            <ion-label>{{ publication.createdAt.toDate() | date:'dd/MM/yyyy' }}</ion-label>
+            <ion-icon
+              name="calendar-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
+            <ion-label
+              >{{ publication.createdAt.toDate() | date:'dd/MM/yyyy'
+              }}</ion-label
+            >
           </ion-item>
         </div>
 
-        <!-- Botón de reserva (solo para usuarios normales) -->
+        <!-- Botón reserva -->
         <div>
           <ion-card-header>
             <ion-card-title>Reservar Alojamiento</ion-card-title>
           </ion-card-header>
-          <ion-button expand="block" color="primary" (click)="showReservationModal()"
-            [disabled]="!publication.availability">
+          <ion-button
+            expand="block"
+            color="primary"
+            (click)="showReservationModal()"
+            [disabled]="!publication.availability"
+          >
             <ion-icon name="calendar-outline" slot="start"></ion-icon>
             Reservar
           </ion-button>
@@ -87,7 +127,7 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Información del arrendador -->
+    <!-- Info Arrendador -->
     <ion-card class="owner-card" mode="ios">
       <ion-card-header>
         <ion-card-title>
@@ -97,31 +137,46 @@
       </ion-card-header>
       <ion-card-content>
         <div class="owner-info">
-          <h2 class="owner-name">{{ publication.userName }} {{ publication.userLastName }}</h2>
+          <h2 class="owner-name">
+            {{ publication.userName }} {{ publication.userLastName }}
+          </h2>
           <ion-item lines="none" class="contact-item">
-            <ion-icon name="mail-outline" color="primary" slot="start"></ion-icon>
+            <ion-icon
+              name="mail-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
             <ion-label>{{ publication.userEmail }}</ion-label>
           </ion-item>
           <ion-item lines="none" class="contact-item">
-            <ion-icon name="call-outline" color="primary" slot="start"></ion-icon>
+            <ion-icon
+              name="call-outline"
+              color="primary"
+              slot="start"
+            ></ion-icon>
             <ion-label>+56 {{ publication.userPhone }}</ion-label>
           </ion-item>
         </div>
 
-        <!-- Estado del usuario y botón de borrar (solo visible para administradores) -->
-        <!-- Controles de administrador (siempre visibles si isAdmin es true) -->
+        <!-- Controles admin -->
         <div *ngIf="isAdmin" class="admin-controls">
-          <!-- Indicador de estado del usuario -->
           <div class="status-indicator">
-            <ion-icon [name]="userActive ? 'checkmark-circle' : 'close-circle'"
-              [color]="userActive ? 'success' : 'danger'">
-            </ion-icon>
-            <span [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'">
+            <ion-icon
+              [name]="userActive ? 'checkmark-circle' : 'close-circle'"
+              [color]="userActive ? 'success' : 'danger'"
+            ></ion-icon>
+            <span
+              [style.color]="userActive ? 'var(--ion-color-success)' : 'var(--ion-color-danger)'"
+            >
               {{ userActive ? 'Usuario Activo' : 'Cuenta Eliminada' }}
             </span>
           </div>
-          <!-- Botón de eliminar publicación -->
-          <ion-button color="danger" expand="block" (click)="deletePublication()" class="delete-button">
+          <ion-button
+            color="danger"
+            expand="block"
+            (click)="deletePublication()"
+            class="delete-button"
+          >
             <ion-icon name="trash-outline" slot="start"></ion-icon>
             Eliminar publicación
           </ion-button>
@@ -129,51 +184,4 @@
       </ion-card-content>
     </ion-card>
   </div>
-
-  <!-- Modal de Reserva (se mostrará al hacer clic en el botón) -->
-  <ion-modal [isOpen]="showReservationCalendar">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Reservar Alojamiento</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="cancelReservation()">Cerrar</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <h2>{{ publication.title }}</h2>
-        <p>Precio por noche: ${{ publication.price | number:'1.0-0' }}</p>
-
-        <ion-item>
-          <ion-label position="stacked">Fecha de llegada</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="startDate" [min]="minDate" [max]="maxDate"
-            (ionChange)="onStartDateChange($event)">
-          </ion-datetime>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Fecha de salida</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="endDate" [min]="startDate || minDate" [max]="maxDate"
-            (ionChange)="onEndDateChange($event)">
-          </ion-datetime>
-        </ion-item>
-
-        <div class="reservation-summary" *ngIf="startDate && endDate">
-          <h3>Resumen de la reserva</h3>
-          <p>Duración: {{ calculateDuration() }} noches</p>
-          <p>Precio total: ${{ totalPrice | number:'1.0-0' }}</p>
-        </div>
-
-        <div *ngIf="hasOverlappingReservation()" class="error-message">
-          <ion-icon name="alert-circle"></ion-icon>
-          Las fechas seleccionadas ya están reservadas. Por favor, elige otras fechas.
-        </div>
-
-        <ion-button expand="block" color="primary" (click)="confirmReservation()" [disabled]="!isValidReservation()">
-          Confirmar Reserva
-        </ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 </ion-content>

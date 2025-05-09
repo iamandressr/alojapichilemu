@@ -13,6 +13,8 @@ import {AngularFireModule} from '@angular/fire/compat';
 import { environment } from 'src/environments/environment';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
+
+
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, IonicModule.forRoot({mode: 'md'}), AppRoutingModule, AngularFireStorageModule, AngularFireModule.initializeApp(environment.firebaseConfig)],
@@ -21,5 +23,4 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
-
 }

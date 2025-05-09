@@ -32,7 +32,7 @@ export class DetallePublicacionPage implements OnInit {
     initialSlide: 0,
     speed: 400,
     loop: true,
-    autoplay: false
+    autoplay: true
   };
 
   constructor(
@@ -46,16 +46,16 @@ export class DetallePublicacionPage implements OnInit {
 
   async ngOnInit() {
     this.isLoading = true;
-    
+
     try {
       // Verificar si el usuario actual es administrador
       await this.checkIfUserIsAdmin();
-      
+
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
         const path = `publications/${id}`;
         this.publication = await this.firebaseSvc.getDocument(path);
-        
+
         // Si el usuario es administrador, verificar si el autor de la publicación existe
         if (this.isAdmin && this.publication) {
           await this.checkIfAuthorExists();
@@ -70,14 +70,14 @@ export class DetallePublicacionPage implements OnInit {
 
   async ionViewWillEnter() {
     console.log('ionViewWillEnter - Verificando autenticación...');
-    
+
     // Esperar un momento para asegurarse de que la autenticación se inicialice
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Volver a verificar el rol de administrador cada vez que se entra a la página
     await this.checkIfUserIsAdmin();
     console.log('ionViewWillEnter - isAdmin:', this.isAdmin);
-    
+
     // Si el usuario es administrador y la publicación está cargada, verificar el estado del autor
     if (this.isAdmin && this.publication) {
       await this.checkIfAuthorExists();
@@ -89,34 +89,34 @@ export class DetallePublicacionPage implements OnInit {
     try {
       // Establecer valor predeterminado
       this.isAdmin = false;
-      
+
       // Obtener el usuario actual
       const auth = this.firebaseSvc.getAuth();
-      
+
       // Manejar correctamente currentUser, que podría ser una promesa
       let currentUser = null;
-      
+
       if (auth.currentUser instanceof Promise) {
         currentUser = await auth.currentUser;
       } else {
         currentUser = auth.currentUser;
       }
-      
+
       if (!currentUser || !currentUser.uid) {
         console.log('No hay usuario autenticado');
         this.isAdmin = false;
         return;
       }
-      
+
       // Obtener el rol del usuario
       const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
-      
+
       if (!userData) {
         console.log('No se encontraron datos de usuario');
         this.isAdmin = false;
         return;
       }
-      
+
       // Verificar si el rol es admin
       if (userData["rol"] === 'admin') {
         this.isAdmin = true;
@@ -125,7 +125,7 @@ export class DetallePublicacionPage implements OnInit {
         this.isAdmin = false;
         console.log('Usuario no es administrador');
       }
-    
+
     } catch (error) {
       console.error('Error al verificar rol de usuario:', error);
       this.isAdmin = false;
@@ -190,7 +190,7 @@ export class DetallePublicacionPage implements OnInit {
       this.router.navigate(['/main/home']);
     } catch (error) {
       console.error('Error al eliminar la publicación:', error);
-      
+
       // Mostrar mensaje de error
       const toast = await this.toastCtrl.create({
         message: 'Error al eliminar la publicación',
@@ -215,12 +215,12 @@ export class DetallePublicacionPage implements OnInit {
 
   calculateDuration() {
     if (!this.startDate || !this.endDate) return 0;
-    
+
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays;
   }
 
@@ -235,14 +235,14 @@ export class DetallePublicacionPage implements OnInit {
 
   hasOverlappingReservation() {
     if (!this.publication.bookedDates || !this.startDate || !this.endDate) return false;
-    
+
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
-    
+
     return this.publication.bookedDates.some(booking => {
       const bookingStart = new Date(booking.startDate);
       const bookingEnd = new Date(booking.endDate);
-      
+
       return (
         (start >= bookingStart && start <= bookingEnd) ||
         (end >= bookingStart && end <= bookingEnd) ||
@@ -261,29 +261,29 @@ export class DetallePublicacionPage implements OnInit {
       await toast.present();
       return;
     }
-    
+
     try {
       const loading = await this.loadingCtrl.create({
         message: 'Procesando reserva...'
       });
       await loading.present();
-      
+
       // Obtener el usuario actual
       const currentUser: any = await this.firebaseSvc.getCurrentUser();
-      
+
       if (!currentUser) {
         await loading.dismiss();
         throw new Error('Debes iniciar sesión para realizar una reserva');
       }
-      
+
       // Obtener datos del usuario
       const userData: any = await this.firebaseSvc.getDocument(`users/${currentUser.uid}`);
-      
+
       if (!userData) {
         await loading.dismiss();
         throw new Error('No se encontraron datos de usuario');
       }
-      
+
       // Crear objeto de reserva
       const reservation: Reservation = {
         publicationId: this.publication.id,
@@ -298,26 +298,26 @@ export class DetallePublicacionPage implements OnInit {
         status: 'pending',
         createdAt: new Date()
       };
-      
+
       // Guardar la reserva en Firestore
       const reservationId = await this.firebaseSvc.addDocument('reservations', reservation);
-      
+
       // Actualizar las fechas reservadas en la publicación
       if (!this.publication.bookedDates) {
         this.publication.bookedDates = [];
       }
-      
+
       this.publication.bookedDates.push({
         startDate: new Date(this.startDate),
         endDate: new Date(this.endDate)
       });
-      
+
       await this.firebaseSvc.updateDocument(`publications/${this.publication.id}`, {
         bookedDates: this.publication.bookedDates
       });
-      
+
       await loading.dismiss();
-      
+
       // Mostrar mensaje de éxito
       const toast = await this.toastCtrl.create({
         message: 'Reserva realizada con éxito',
@@ -325,13 +325,13 @@ export class DetallePublicacionPage implements OnInit {
         color: 'success'
       });
       await toast.present();
-      
+
       // Cerrar el modal
       this.cancelReservation();
-      
+
     } catch (error) {
       console.error('Error al realizar la reserva:', error);
-      
+
       const toast = await this.toastCtrl.create({
         message: error.message || 'Error al realizar la reserva',
         duration: 3000,

@@ -15,7 +15,7 @@
       <ion-row>
         <ion-col size="4" *ngFor="let image of selectedImages; let i = index">
           <ion-card>
-            <img [src]="image.preview">
+            <img [src]="image">
             <ion-button fill="clear" color="danger" (click)="removeImage(i)">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>
@@ -23,6 +23,7 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+
 
     <ion-item>
       <ion-label position="floating">Título</ion-label>
@@ -38,9 +39,9 @@
       <ion-label position="floating">Precio por noche (CLP)</ion-label>
       <br>
       <ion-input
-     
-        type="number" 
-        formControlName="price" 
+
+        type="number"
+        formControlName="price"
         min="0"
         inputmode="numeric"
         pattern="[0-9]*"
@@ -70,10 +71,10 @@
     <ion-item>
       <ion-label  position="floating">Capacidad (personas)</ion-label>
       <ion-input
-         
-        type="number" 
-        formControlName="capacity" 
-        min="1" 
+
+        type="number"
+        formControlName="capacity"
+        min="1"
         max="20"
         [clearInput]="true"
         inputmode="numeric"
@@ -82,8 +83,8 @@
     </ion-item>
 
     <br>
-    <ion-button 
-  expand="block" 
+    <ion-button
+  expand="block"
   mode="ios"
   class="ion-padding-horizontal ion-margin-top"
   (click)="createPublication()"
@@ -93,7 +94,7 @@
   Publicar
 </ion-button>
 <ion-button
-  expand="block" 
+  expand="block"
   mode="ios"
   (click)="goBack()"
   fill="outline">
